@@ -18,5 +18,13 @@
   "bugs": {
     "url": "https://github.com/alexanderdavidenko32/remember-series/issues"
   },
-  "homepage": "https://github.com/alexanderdavidenko32/remember-series#readme"
+  "homepage": "https://github.com/alexanderdavidenko32/remember-series#readme",
+  "dependencies": {
+    "express": "^4.13.3",
+    "express-enrouten": "^1.2.1",
+    "jade": "^1.11.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0"
+  }
 }
