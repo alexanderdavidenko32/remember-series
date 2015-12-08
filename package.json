@@ -1,0 +1,22 @@
+{
+  "name": "remember-series",
+  "version": "1.0.0",
+  "description": "remember series",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexanderdavidenko32/remember-series.git"
+  },
+  "keywords": [
+    "series"
+  ],
+  "author": "Alexander Davidenko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexanderdavidenko32/remember-series/issues"
+  },
+  "homepage": "https://github.com/alexanderdavidenko32/remember-series#readme"
+}
