@@ -2,12 +2,19 @@ var express = require('express'),
     enrouten = require('express-enrouten'),
     session = require('express-session'),
     config = require('./config/config.json'),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    cookieParser = require('cookie-parser'),
+    bodyParser = require('body-parser');
 
 var app = express();
 
 app.set('views', './public/templates');
 app.set('view engine', 'jade');
+
+
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(session({
     secret: 'my secret',
