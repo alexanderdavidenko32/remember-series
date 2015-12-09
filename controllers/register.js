@@ -13,12 +13,14 @@ module.exports = function (router) {
         res.render('register', data);
     });
     router.post('/', function(req, res) {
-        console.log('cookie:', req.cookies);
-        console.log('session:', req.session.id);
-        console.log('session cookie:', req.session.cookie.connect);
+        //console.log('cookie:', req.cookies);
+        //console.log('session:', req.session.id);
+        //console.log('session cookie:', req.session.cookie.connect);
 
         var login = req.body.login,
             password = req.body.password;
+        //req.session.user = 'i am user';
+        //res.redirect('/');
 
         models.user.find({"_id": login}, function(err, user) {
             if (err) {
@@ -33,21 +35,16 @@ module.exports = function (router) {
                         _id: login,
                         email: login,
                         password: password
-                    }, function(err) {
+                    }, function(err, user) {
                         if (err) {
                             errorHandler(res, err);
                         } else {
+                            console.log(user);
                             // TODO: connect-mongo integration
-                            models.session.create({
-                                _id: req.session.id,
-                                user: login
-                            }, function(err) {
-                                if (err) {
-                                    errorHandler(res, err);
-                                } else {
-                                    res.redirect('/');
-                                }
-                            })
+                            req.session.user = {
+                                _id: user._id
+                            }
+                            res.redirect('/');
                         }
                     });
                 }

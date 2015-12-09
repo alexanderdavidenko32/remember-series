@@ -3,9 +3,9 @@ module.exports = function (router) {
         var data = {
             title: 'Hello',
             message: 'Index page',
-            session: req.session
+            user: req.session.user
         };
-        console.log(req.session.id);
+        //console.log(req.session.id, req.session.user);
         res.render('index', data);
     });
 };
