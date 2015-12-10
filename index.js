@@ -6,7 +6,7 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
     MongoStore = require('connect-mongodb-session')(session),
-    checkUser = require('./lib/check-user'),
+    checkUser = require('./middleware/check-user'),
 
     connectionUri = 'mongodb://' + config.db.host + ':' + config.db.port + '/' + config.db.database,
 

@@ -1,4 +1,4 @@
-var errorHandler = require('../lib/errorHandler');
+var errorHandler = require('../lib/error-handler');
 
 module.exports = function (router) {
     router.get('/', function (req, res) {

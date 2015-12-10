@@ -2,6 +2,8 @@ extends ./index.jade
 
 block content
   h1 #{message} !!
+  if errors.error
+    h2 #{errors.error}
   form(action="/login" method="post")
     fieldset
       input(type="text" name="login")

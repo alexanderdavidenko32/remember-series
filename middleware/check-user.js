@@ -1,5 +1,5 @@
 var models = require('../models'),
-    errorHandler = require('./errorHandler');
+    errorHandler = require('../lib/error-handler');
 
 module.exports = function() {
     return function(req, res, next) {

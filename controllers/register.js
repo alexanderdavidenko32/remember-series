@@ -1,5 +1,6 @@
-var models = require('../models'),
-    errorHandler = require('../lib/errorHandler');
+var bcrypt = require('bcrypt'),
+    models = require('../models'),
+    errorHandler = require('../lib/error-handler');
 
 module.exports = function (router) {
     var data = {
@@ -32,10 +33,13 @@ module.exports = function (router) {
                     data.errors.userExists = 'User already exists';
                     res.render('register', data);
                 } else {
+                    var salt = bcrypt.genSaltSync(),
+                        passwordHash = bcrypt.hashSync(password, salt);
+
                     models.user.create({
                         _id: login,
                         email: login,
-                        password: password
+                        password: passwordHash
                     }, function(err, user) {
                         if (err) {
                             errorHandler(err, res);

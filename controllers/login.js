@@ -1,5 +1,6 @@
-var models = require('../models'),
-    errorHandler = require('../lib/errorHandler');
+var bcrypt = require('bcrypt'),
+    models = require('../models'),
+    errorHandler = require('../lib/error-handler');
 
 module.exports = function (router) {
     var data = {
@@ -23,11 +24,11 @@ module.exports = function (router) {
                 if (err) {
                     errorHandler(err, res);
                 } else {
-                    if (user && user.password === password) {
+                    if (user && bcrypt.compareSync(password, user.password)) {
                         req.session.userId = user._id;
                         res.redirect('/');
                     } else {
-                        data.errors.wringUsernameOrPassword = 'wrong username or password';
+                        data.errors.error = 'wrong username or password';
                         res.render('login', data);
                     }
                 }
