@@ -10,6 +10,8 @@ var express = require('express'),
 
 mongoose.connect(connectionUri);
 
+mongoose.Promise = global.Promise;
+
 app.set('views', './public/templates');
 app.set('view engine', 'jade');
 

@@ -20,38 +20,35 @@ module.exports = function (router) {
 
         var login = req.body.login,
             password = req.body.password;
-        //req.session.user = 'i am user';
-        //res.redirect('/');
 
-        models.user.find({"_id": login}, function(err, user) {
-            if (err) {
-                errorHandler(err, res);
-            } else {
-                data.errors = {};
-                // if user exists
-                if (user.length) {
-                    data.errors.userExists = 'User already exists';
-                    res.render('register', data);
-                } else {
-                    var salt = bcrypt.genSaltSync(),
-                        passwordHash = bcrypt.hashSync(password, salt);
+        models.user.findById(login).then(function(user) {
+            data.errors = {};
+            // if user exists
+            if (user) {
+                data.errors.userExists = 'User already exists';
+                res.render('register', data);
 
-                    models.user.create({
-                        _id: login,
-                        email: login,
-                        password: passwordHash
-                    }, function(err, user) {
-                        if (err) {
-                            errorHandler(err, res);
-                        } else {
-                            //console.log(user);
-
-                            req.session.userId = user._id;
-                            res.redirect('/');
-                        }
-                    });
-                }
+                throw 'User already exists';
             }
+            return;
+        })
+        .then(function() {
+            var salt = bcrypt.genSaltSync(),
+                passwordHash = bcrypt.hashSync(password, salt);
+
+            return models.user.create({
+                _id: login,
+                email: login,
+                password: passwordHash
+            });
+        })
+        .then(function(user){
+            req.session.userId = user._id;
+            res.redirect('/');
+        })
+        .catch(function(err) {
+            errorHandler(err, res);
         });
     });
+
 };

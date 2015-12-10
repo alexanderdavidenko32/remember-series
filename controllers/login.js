@@ -20,19 +20,19 @@ module.exports = function (router) {
                 password = req.body.password;
 
             data.errors = {};
-            models.user.findById(login, function(err, user) {
-                if (err) {
-                    errorHandler(err, res);
+            models.user.findById(login).then(function(user) {
+                if (user && bcrypt.compareSync(password, user.password)) {
+                    req.session.userId = user._id;
+                    res.redirect('/');
                 } else {
-                    if (user && bcrypt.compareSync(password, user.password)) {
-                        req.session.userId = user._id;
-                        res.redirect('/');
-                    } else {
-                        data.errors.error = 'wrong username or password';
-                        res.render('login', data);
-                    }
+                    data.errors.error = 'wrong username or password';
+                    res.render('login', data);
                 }
+                return;
             })
+            .catch(function(err) {
+                errorHandler(err, res);
+            });
         }
     });
 };
