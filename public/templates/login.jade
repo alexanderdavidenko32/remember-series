@@ -2,3 +2,8 @@ extends ./index.jade
 
 block content
   h1 #{message} !!
+  form(action="/login" method="post")
+    fieldset
+      input(type="text" name="login")
+      input(type="password" name="password")
+      input(type="submit")

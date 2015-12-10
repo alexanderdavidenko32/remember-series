@@ -35,7 +35,7 @@ app.use(session({
     })
 }));
 
-//app.use(checkUser());
+app.use(checkUser());
 app.use(enrouten({
     directory: 'controllers'
 }));

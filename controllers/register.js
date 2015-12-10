@@ -24,8 +24,9 @@ module.exports = function (router) {
 
         models.user.find({"_id": login}, function(err, user) {
             if (err) {
-                errorHandler(res, err);
+                errorHandler(err, res);
             } else {
+                data.errors = {};
                 // if user exists
                 if (user.length) {
                     data.errors.userExists = 'User already exists';
@@ -37,13 +38,11 @@ module.exports = function (router) {
                         password: password
                     }, function(err, user) {
                         if (err) {
-                            errorHandler(res, err);
+                            errorHandler(err, res);
                         } else {
-                            console.log(user);
-                            // TODO: connect-mongo integration
-                            req.session.user = {
-                                _id: user._id
-                            }
+                            //console.log(user);
+
+                            req.session.userId = user._id;
                             res.redirect('/');
                         }
                     });
