@@ -17,6 +17,8 @@ app.set('view engine', 'jade');
 
 middleware(app);
 
+var models = require('./models');
+
 var server = app.listen(config.port, function(err) {
     console.log('app started. http://localhost:' + config.port);
 });

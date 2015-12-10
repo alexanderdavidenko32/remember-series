@@ -3,8 +3,10 @@ var cookieParser = require('cookie-parser'),
     session = require('express-session'),
     enrouten = require('express-enrouten'),
     MongoStore = require('connect-mongodb-session')(session),
-    checkUser = require('./check-user'),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    lusca = require('lusca'),
+
+    checkUser = require('./check-user');
 
 module.exports = function(app) {
     var connection = mongoose.connection,
@@ -23,6 +25,20 @@ module.exports = function(app) {
         store: new MongoStore({
             uri: connectionUri
         })
+    }));
+
+    app.use(lusca({
+        csrf: true,
+        csp: {
+            policy: {
+                'default-src': '\'self\'',
+                'img-src': '*'
+            }
+        },
+        xframe: 'SAMEORIGIN',
+        p3p: 'ABCDEF',
+        hsts: {maxAge: 31536000, includeSubDomains: true, preload: true},
+        xssProtection: true
     }));
 
     app.use(checkUser());

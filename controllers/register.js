@@ -10,6 +10,7 @@ module.exports = function (router) {
     };
 
     router.get('/', function (req, res) {
+        data._csrf = res.locals._csrf;
         data.errors = {};
         res.render('register', data);
     });

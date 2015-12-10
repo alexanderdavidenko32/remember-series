@@ -9,6 +9,7 @@ module.exports = function (router) {
         errors: {}
     };
     router.get('/', function (req, res) {
+        data._csrf = res.locals._csrf;
         data.errors = {};
         res.render('login', data);
     });
