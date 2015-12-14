@@ -32,8 +32,8 @@ module.exports = function (router) {
                 data.errors = req.form.getErrors();
                 res.render('login', data);
             } else {
-                var login = req.body.login,
-                    password = req.body.password;
+                var login = req.form.login,
+                    password = req.form.password;
 
                 data.errors = {};
                 models.user.findById(login).then(function(user) {

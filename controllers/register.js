@@ -31,8 +31,8 @@ module.exports = function (router) {
                 res.render('register', data);
             } else {
 
-                var login = req.body.login,
-                    password = req.body.password;
+                var login = req.form.login,
+                    password = req.form.password;
 
                 models.user.findById(login).then(function(user) {
                     data.errors = {};
