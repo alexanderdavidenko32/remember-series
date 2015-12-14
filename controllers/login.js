@@ -1,4 +1,7 @@
 var bcrypt = require('bcrypt'),
+    form = require('express-form2'),
+    field = form.field,
+
     models = require('../models'),
     errorHandler = require('../lib/error-handler');
 
@@ -13,27 +16,35 @@ module.exports = function (router) {
         data.errors = {};
         res.render('login', data);
     });
-    router.post('/', function(req, res) {
-        if (req.user) {
-            req.redirect('/');
-        } else {
-            var login = req.body.login,
-                password = req.body.password;
+    router.post('/',
+        form(
+            field('login').trim().required().isEmail('should be email'),
+            field('password').required()
+        ),
+        function(req, res) {
+            if (req.user) {
+                req.redirect('/');
+            } else if (!req.form.isValid) {
+                data.errors = req.form.getErrors();
+                res.render('login', data);
+            } else {
+                var login = req.body.login,
+                    password = req.body.password;
 
-            data.errors = {};
-            models.user.findById(login).then(function(user) {
-                if (user && bcrypt.compareSync(password, user.password)) {
-                    req.session.userId = user._id;
-                    res.redirect('/');
-                } else {
-                    data.errors.error = 'wrong username or password';
-                    res.render('login', data);
-                }
-                return;
-            })
-            .catch(function(err) {
-                errorHandler(err, res);
-            });
-        }
-    });
+                data.errors = {};
+                models.user.findById(login).then(function(user) {
+                    if (user && bcrypt.compareSync(password, user.password)) {
+                        req.session.userId = user._id;
+                        res.redirect('/');
+                    } else {
+                        data.errors.error = 'wrong username or password';
+                        res.render('login', data);
+                    }
+                    return;
+                })
+                .catch(function(err) {
+                    errorHandler(err, res);
+                });
+            }
+        });
 };
