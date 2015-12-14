@@ -12,9 +12,13 @@ module.exports = function (router) {
         errors: {}
     };
     router.get('/', function (req, res) {
-        data._csrf = res.locals._csrf;
-        data.errors = {};
-        res.render('login', data);
+        if (req.user) {
+            res.redirect('/');
+        } else {
+            data._csrf = res.locals._csrf;
+            data.errors = {};
+            res.render('login', data);
+        }
     });
     router.post('/',
         form(
@@ -23,7 +27,7 @@ module.exports = function (router) {
         ),
         function(req, res) {
             if (req.user) {
-                req.redirect('/');
+                res.redirect('/');
             } else if (!req.form.isValid) {
                 data.errors = req.form.getErrors();
                 res.render('login', data);
