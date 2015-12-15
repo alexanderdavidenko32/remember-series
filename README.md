@@ -3,4 +3,5 @@
 ## deploy
 - install mongodb
 - install all dependecies `npm install`
-- run `node index.js`
+- install gulp `npm install -g gulp`
+- run `gulp`
