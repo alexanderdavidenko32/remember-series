@@ -1,5 +1,7 @@
-var UserModel = require('./user/UserModel');
+var UserModel = require('./user/UserModel'),
+    SeriesModel = require('./series/SeriesModel');
 
 module.exports = {
-    user: UserModel
+    user: UserModel,
+    series: SeriesModel
 };
