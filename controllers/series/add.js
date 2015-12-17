@@ -1,0 +1,65 @@
+var form = require('express-form2'),
+    field = form.field,
+
+    errorHandler = require('../../lib/error-handler'),
+    models = require('../../models');
+
+module.exports = function (router) {
+    var data = {
+        title: 'Series add',
+        message: 'Series add page'
+    };
+    router.get('/', function (req, res) {
+
+        if (!req.user) {
+            res.redirect('/series');
+        } else {
+            data.user = req.user;
+            data._csrf = res.locals._csrf;
+            data.form = {};
+            data.errors = {};
+            res.render('series/add', data);
+        }
+    });
+
+    router.post('/',
+        form(
+            field('name').trim().required(),
+            field('description'),
+            field('poster').isUrl('poster should be an url'),
+            field('year').isNumeric('year should be numeric').min(1900).max(2100)
+        ),
+        function(req, res) {
+
+            if (!req.user) {
+                res.redirect('/series');
+            } else if (!req.form.isValid) {
+                data.errors = req.form.getErrors();
+                data.form = req.form;
+                res.render('series/add', data);
+            } else {
+                var name = req.form.name,
+                    description = req.form.description,
+                    poster = req.form.poster,
+                    year = req.form.year;
+
+                data.errors = {};
+
+                models.series.create({
+                    name: name,
+                    description: description,
+                    poster: poster,
+                    year: year,
+                    creatorId: req.user._id,
+                    seasons: []
+                })
+                .then(function(series) {
+                    res.redirect('/series/' + series._id);
+                })
+                .catch(function(err) {
+                    errorHandler(err, res);
+                });
+            }
+
+    });
+};

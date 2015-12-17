@@ -1,11 +1,6 @@
 var mongoose = require('mongoose');
 
 var episodeSchema = mongoose.Schema({
-    _id: {
-        type: String,
-        required: true,
-        unique: true
-    },
     name: {
         type: String,
         required: true

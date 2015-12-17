@@ -8,8 +8,7 @@ var bcrypt = require('bcrypt'),
 module.exports = function (router) {
     var data = {
         title: 'Register',
-        message: 'Register page',
-        errors: {}
+        message: 'Register page'
     };
 
     router.get('/', function (req, res) {
@@ -23,6 +22,7 @@ module.exports = function (router) {
             field('password').required()
         ),
         function(req, res) {
+            data.errors = {};
             //console.log('cookie:', req.cookies);
             //console.log('session:', req.session.id);
             //console.log('session cookie:', req.session.cookie.connect);
@@ -35,7 +35,6 @@ module.exports = function (router) {
                     password = req.form.password;
 
                 models.user.findById(login).then(function(user) {
-                    data.errors = {};
                     // if user exists
                     if (user) {
                         data.errors.userExists = 'User already exists';

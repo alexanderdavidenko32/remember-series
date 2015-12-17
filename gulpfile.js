@@ -3,7 +3,8 @@ var gulp = require('gulp'),
 
 gulp.task('server', function() {
     nodemon({
-        script: 'index.js'
+        script: 'index.js',
+        ext: 'js jade'
     });
 });
 

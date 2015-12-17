@@ -1,0 +1,10 @@
+extends ../index.jade
+
+block content
+  h1= message
+
+  div name: #{series.name}
+  div description: #{series.description}
+  div poster:
+    img(src="#{series.poster}")
+  div year: #{series.year}

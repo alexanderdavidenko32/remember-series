@@ -2,11 +2,6 @@ var mongoose = require('mongoose'),
     episodeSchema = require('./EpisodeSchema');
 
 var seasonSchema = mongoose.Schema({
-    _id: {
-        type: String,
-        required: true,
-        unique: true
-    },
     name: {
         type: String,
         required: true
