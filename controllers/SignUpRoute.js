@@ -1,22 +1,25 @@
 var bcrypt = require('bcrypt'),
     form = require('express-form2'),
     field = form.field,
+    express = require('express'),
+    router = express.Router(),
 
     models = require('../models'),
-    errorHandler = require('../lib/error-handler');
+    errorHandler = require('../lib/error-handler'),
+    routes;
 
-module.exports = function (router) {
+routes = function () {
     var data = {
-        title: 'Register',
-        message: 'Register page'
+        title: 'Sign up',
+        message: 'Sign up page'
     };
 
-    router.get('/', function (req, res) {
+    router.route('/').get(function (req, res) {
         data._csrf = res.locals._csrf;
         data.errors = {};
-        res.render('register', data);
-    });
-    router.post('/',
+        res.render('signup', data);
+    })
+    .post(
         form(
             field('login').trim().required().isEmail('should be email'),
             field('password').required()
@@ -28,7 +31,7 @@ module.exports = function (router) {
             //console.log('session cookie:', req.session.cookie.connect);
             if (!req.form.isValid) {
                 data.errors = req.form.getErrors();
-                res.render('register', data);
+                res.render('signup', data);
             } else {
 
                 var login = req.form.login,
@@ -38,7 +41,7 @@ module.exports = function (router) {
                     // if user exists
                     if (user) {
                         data.errors.userExists = 'User already exists';
-                        res.render('register', data);
+                        res.render('signup', data);
 
                         throw 'User already exists';
                     }
@@ -64,4 +67,6 @@ module.exports = function (router) {
             }
         });
 
+    return router;
 };
+module.exports = routes();

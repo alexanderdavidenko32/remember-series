@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser'),
     MongoStore = require('connect-mongodb-session')(session),
     mongoose = require('mongoose'),
     lusca = require('lusca'),
+    routes = require('../controllers'),
 
     checkUser = require('./check-user');
 
@@ -42,7 +43,8 @@ module.exports = function(app) {
     }));
 
     app.use(checkUser());
-    app.use(enrouten({
-        directory: '../controllers'
-    }));
+    routes(app);
+    //app.use(enrouten({
+        //directory: '../controllers'
+    //}));
 };

@@ -1,15 +1,18 @@
 var form = require('express-form2'),
     field = form.field,
+    express = require('express'),
+    router = express.Router({mergeParams: true}),
+
 
     errorHandler = require('../../lib/error-handler'),
     models = require('../../models');
 
-module.exports = function (router) {
+routes = function () {
     var data = {
         title: 'Series add',
         message: 'Series add page'
     };
-    router.get('/', function (req, res) {
+    router.route('/').get(function (req, res) {
 
         if (!req.user) {
             res.redirect('/series');
@@ -20,9 +23,8 @@ module.exports = function (router) {
             data.errors = {};
             res.render('series/add', data);
         }
-    });
-
-    router.post('/',
+    })
+    .post(
         form(
             field('name').trim().required(),
             field('description'),
@@ -62,4 +64,8 @@ module.exports = function (router) {
             }
 
     });
+
+    return router;
 };
+
+module.exports = routes();

@@ -2,6 +2,11 @@ var mongoose = require('mongoose'),
     episodeSchema = require('./EpisodeSchema');
 
 var seasonSchema = mongoose.Schema({
+    number: {
+        type: Number,
+        required: true,
+        min: 0
+    },
     name: {
         type: String,
         required: true
@@ -14,10 +19,6 @@ var seasonSchema = mongoose.Schema({
     },
     year: {
         type: Number
-    },
-    number: {
-        type: Number,
-        required: true
     },
     episodes: [episodeSchema]
 

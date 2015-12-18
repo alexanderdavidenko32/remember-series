@@ -1,7 +1,6 @@
-extends ../index.jade
+extends ../index
 
 block content
-  h1= message
   form(action="/series/add" method="post")
     fieldset
       if errors && errors.name

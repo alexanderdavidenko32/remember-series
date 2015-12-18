@@ -12,11 +12,11 @@ html
       li
         a(href="/logout") logout
       li
-        a(href="/register") register
+        a(href="/signup") sign up
       li
         a(href="/series") series
+    h1= message
     block content
-      h1= message
       if user
         h2 hello #{user._id}
 

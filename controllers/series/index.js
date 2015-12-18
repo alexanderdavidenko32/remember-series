@@ -1,13 +1,20 @@
-var models = require('../../models'),
+var express = require('express'),
+    router = express.Router(),
+
+    SeasonRoute = require('./season'),
+    AddSeriesRoute = require('./add'),
+
+    models = require('../../models'),
     errorHandler = require('../../lib/error-handler');
 
-module.exports = function (router) {
-    router.get('/', function (req, res) {
-        var data = {
-            title: 'Series',
-            message: 'Series page',
-            user: req.user
-        };
+routes = function () {
+    var data = {
+        title: 'Series',
+        message: 'Series page',
+    };
+
+    router.route('/').get(function (req, res) {
+        data.user = req.user;
 
         models.series.find({})
         .then(function(series) {
@@ -15,14 +22,11 @@ module.exports = function (router) {
             res.render('series/index', data);
         })
     });
-    router.get('/:id', function(req, res) {
-        var data = {
-            title: 'Series',
-            message: 'Series page',
-            user: req.user
-        };
+    router.use('/add', AddSeriesRoute);
+    router.route('/:seriesId').get(function(req, res) {
+        data.user = req.user;
 
-        models.series.findById(req.params.id)
+        models.series.findById(req.params.seriesId)
         .then(function(series) {
             data.series = series;
             res.render('series/series', data)
@@ -31,4 +35,10 @@ module.exports = function (router) {
             errorHandler(err, res);
         });
     });
+
+    router.use('/:seriesId/season', SeasonRoute);
+
+
+    return router;
 };
+module.exports = routes();
