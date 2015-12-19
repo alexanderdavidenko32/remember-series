@@ -1,6 +1,11 @@
 var mongoose = require('mongoose');
 
 var episodeSchema = mongoose.Schema({
+    number: {
+        type: Number,
+        required: true,
+        min: 0
+    },
     name: {
         type: String,
         required: true
@@ -11,10 +16,10 @@ var episodeSchema = mongoose.Schema({
     poster: {
         type: String
     },
-    number: {
-        type: Number,
-        required: true,
-        min: 0
+    creator: {
+        type: String,
+        ref: 'User',
+        required: true
     }
 });
 

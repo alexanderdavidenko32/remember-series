@@ -20,6 +20,11 @@ var seasonSchema = mongoose.Schema({
     year: {
         type: Number
     },
+    creator: {
+        type: String,
+        ref: 'User',
+        required: true
+    },
     episodes: [episodeSchema]
 
 });

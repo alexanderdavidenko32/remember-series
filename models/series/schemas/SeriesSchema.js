@@ -20,8 +20,9 @@ var seriesSchema = mongoose.Schema({
     year: {
         type: Number
     },
-    creatorId: {
+    creator: {
         type: String,
+        ref: 'User',
         required: true
     },
     //genre: {

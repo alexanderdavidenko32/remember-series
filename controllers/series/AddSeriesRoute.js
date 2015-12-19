@@ -42,21 +42,18 @@ routes = function () {
                     data.form = req.form;
                     res.render('series/add', data);
                 } else {
-                    var name = req.form.name,
-                        description = req.form.description,
-                        poster = req.form.poster,
-                        year = req.form.year;
+                    var series = {
+                            name: req.form.name,
+                            description: req.form.description,
+                            poster: req.form.poster,
+                            year: req.form.year,
+                            creator: req.user._id,
+                            seasons: []
+                        };
 
                     data.errors = {};
 
-                    models.series.create({
-                        name: name,
-                        description: description,
-                        poster: poster,
-                        year: year,
-                        creatorId: req.user._id,
-                        seasons: []
-                    })
+                    models.series.create(series)
                     .then(function(series) {
                         res.redirect('/series/' + series._id);
                     })

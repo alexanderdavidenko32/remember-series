@@ -51,7 +51,8 @@ routes = function () {
                             name: req.form.name,
                             description: req.form.description,
                             poster: req.form.poster,
-                            year: req.form.year
+                            year: req.form.year,
+                            creator: req.user._id
                         };
 
                     data.errors = {};

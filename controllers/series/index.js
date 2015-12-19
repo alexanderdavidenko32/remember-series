@@ -33,6 +33,7 @@ routes = function () {
             data.user = req.user;
 
             models.series.findById(req.params.seriesId)
+            .populate('creator')
             .then(function(series) {
                 // TODO: filter series by ownerId (admin or userId)
                 data.series = series;

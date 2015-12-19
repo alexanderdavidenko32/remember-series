@@ -15,7 +15,7 @@ routes = function () {
     router
         .route('/')
         .get(function (req, res) {
-            console.log(req.params);
+            //console.log(req.params);
 
             models.series.findById(req.params.seriesId)
             .then(function(series) {
@@ -31,10 +31,18 @@ routes = function () {
         .get(function(req, res) {
 
             models.series.findById(req.params.seriesId)
+            .populate('creator')
             .then(function(series) {
                 var season = series.seasons.id(req.params.seasonId);
-                data.series = series;
-                data.season = season;
+                if (!season) {
+                    //TODO: 404 page
+                    throw 'wrong season id';
+                }
+                return {series: series, season: season};
+            })
+            .then(function (result) {
+                data.series = result.series;
+                data.season = result.season;
                 res.render('series/season/season', data)
             })
             .catch(function(err) {
