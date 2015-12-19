@@ -33,7 +33,7 @@ routes = function () {
                 field('name').trim().required(),
                 field('description'),
                 field('poster').isUrl('poster should be an url'),
-                field('year').isNumeric('year should be numeric').min(1900, 'year should be greater than 1900').max(2100, 'year should be less than 2100')
+                field('year').isNumeric('year should be numeric')//.min(1900, 'year should be greater than 1900').max(2100, 'year should be less than 2100')
             ),
             function(req, res) {
 

@@ -1,0 +1,11 @@
+//
+   Created by Alexander.Davidenko 
+   @date 12/19/15.
+extends ../../../index
+
+block content
+  a(href="/series/#{series._id}/season/#{season._id}/episode/add") add episode
+  ul
+    each episode in season.episodes
+      li #{episode.number} name: #{episode.name}
+        a(href="/series/#{series._id}/season/#{season._id}/episode/#{episode._id}") view

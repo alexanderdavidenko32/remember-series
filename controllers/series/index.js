@@ -34,6 +34,7 @@ routes = function () {
 
             models.series.findById(req.params.seriesId)
             .then(function(series) {
+                // TODO: filter series by ownerId (admin or userId)
                 data.series = series;
                 res.render('series/series', data)
             })

@@ -30,9 +30,11 @@ routes = function () {
         .route('/:seasonId')
         .get(function(req, res) {
 
-            models.series.findById(req.params.id)
+            models.series.findById(req.params.seriesId)
             .then(function(series) {
+                var season = series.seasons.id(req.params.seasonId);
                 data.series = series;
+                data.season = season;
                 res.render('series/season/season', data)
             })
             .catch(function(err) {
