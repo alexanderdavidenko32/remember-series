@@ -7,12 +7,14 @@ html
     ul
       li
         a(href="/") index
-      li
-        a(href="/login") login
-      li
-        a(href="/logout") logout
-      li
-        a(href="/signup") sign up
+      if user
+        li
+          a(href="/logout") logout
+      else
+        li
+          a(href="/login") login
+        li
+          a(href="/signup") sign up
       li
         a(href="/series") series
     h1= message

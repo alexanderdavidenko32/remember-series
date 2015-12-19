@@ -33,7 +33,7 @@ routes = function () {
                 field('name').trim().required(),
                 field('description'),
                 field('poster').isUrl('poster should be an url'),
-                field('year').isNumeric('year should be numeric').min(1900).max(2100)
+                field('year').isNumeric('year should be numeric').min(1900, 'year should be greater than 1900').max(2100, 'year should be less than 2100')
             ),
             function(req, res) {
 
@@ -42,21 +42,24 @@ routes = function () {
                 } else if (!req.form.isValid) {
                     data.errors = req.form.getErrors();
                     data.form = req.form;
+                    data.series = {_id: req.params.seriesId};
                     res.render('series/season/add', data);
                 } else {
                     var seriesId = req.params.seriesId,
-                        number = req.form.number,
-                        name = req.form.name,
-                        description = req.form.description,
-                        poster = req.form.poster,
-                        year = req.form.year;
+                        season = {
+                            number: req.form.number,
+                            name: req.form.name,
+                            description: req.form.description,
+                            poster: req.form.poster,
+                            year: req.form.year
+                        };
 
                     data.errors = {};
                     data.series = {_id: seriesId};
                     data.form = req.form;
 
                     models.series
-                        .find({_id: seriesId, "seasons.number": number})
+                        .find({_id: seriesId, "seasons.number": season.number})
                         .then(function (series) {
                             if (series.length) {
                                 data.errors.seasonExists = 'Season with this number already exist';
@@ -66,13 +69,7 @@ routes = function () {
                             return models.series.findById(seriesId);
                         })
                         .then(function (series) {
-                            series.seasons.push({
-                                number: number,
-                                name: name,
-                                description: description,
-                                poster: poster,
-                                year: year
-                            });
+                            series.seasons.push(season);
                             return series.save();
                         })
                         .then(function (series) {

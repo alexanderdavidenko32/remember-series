@@ -9,7 +9,7 @@ var express = require('express'),
 routes = function () {
     var data = {
         title: 'Season',
-        message: 'Season page',
+        message: 'Season page'
     };
 
     router
