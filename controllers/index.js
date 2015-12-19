@@ -3,7 +3,7 @@ var IndexRoute = require('./IndexRoute'),
     LogoutRoute = require('./LogoutRoute'),
     SignUpRoute = require('./SignUpRoute'),
     SeriesRoute = require('./series'),
-    //ErrorsRoute = require('./errors'),
+    ErrorsRoute = require('./errors'),
     routes;
 
 routes = function(app) {
@@ -13,7 +13,7 @@ routes = function(app) {
     app.use('/signup', SignUpRoute);
 
     app.use('/series', SeriesRoute);
-    //app.use('/error', ErrorsRoute);
+    app.use('/errors', ErrorsRoute);
 
 
     // TODO: 404 route

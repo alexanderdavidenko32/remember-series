@@ -43,7 +43,7 @@ routes = function () {
                         data.errors.userExists = 'User already exists';
                         res.render('signup', data);
 
-                        throw 'User already exists';
+                        throw data.errors.userExists;
                     }
                     return;
                 })

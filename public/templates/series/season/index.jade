@@ -4,5 +4,5 @@ block content
   a(href="/series/#{series._id}/season/add") add season
   ul
     each season in series.seasons
-      li #{season.name}
+      li #{season.number} name: #{season.name}
         a(href="/series/#{series._id}/season/#{season.number}") view
