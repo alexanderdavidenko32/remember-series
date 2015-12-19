@@ -10,7 +10,7 @@ var express = require('express'),
 routes = function () {
     var data = {
         title: 'Series',
-        message: 'Series page',
+        message: 'Series page'
     };
 
     router
