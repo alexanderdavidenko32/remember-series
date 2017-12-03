@@ -1,0 +1,13 @@
+//
+   Created by Alexander Davidenko 
+   @date 12/1/17.
+extends ../../../index
+
+block content
+  div number: #{episode.number}
+  div name: #{episode.name}
+  div description: #{episode.description}
+  div poster:
+    img(src="#{episode.poster}")
+  div year: #{episode.year}
+  a(href="/series/#{series._id}/season/#{season._id}/episode") list of episodes

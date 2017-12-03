@@ -4,28 +4,31 @@ var express = require('express'),
     form = require('express-form2'),
     field = form.field,
 
-    errorHandler = require('../../../lib/error-handler'),
-    models = require('../../../models');
+    mongoose = require('mongoose'),
+
+    errorHandler = require('../../../../lib/error-handler'),
+    models = require('../../../../models');
 
 routes = function () {
     var data = {
-        title: 'Season add',
-        message: 'Season add page'
+        title: 'Episode add',
+        message: 'Episode add page'
     };
     router
         .route('/')
         .get(function (req, res) {
 
             if (!req.user) {
-                res.redirect('/series/' + req.params.seriesId +  '/season');
+                res.redirect(`/series/${req.params.seriesId}/season/${req.params.seasonId}/episode`);
             } else {
                 data.user = req.user;
                 data._csrf = res.locals._csrf;
                 data.form = {};
                 data.errors = {};
                 data.series = {_id: req.params.seriesId};
+                data.season = {_id: req.params.seasonId};
 
-                res.render('series/season/add', data);
+                res.render('series/season/episode/add', data);
             }
         })
         .post(
@@ -39,16 +42,19 @@ routes = function () {
             function(req, res) {
 
                 if (!req.user) {
-                    res.redirect('/series/' + req.params.seriesId + '/season');
+                    res.redirect(`/series/${req.params.seriesId}/season/${req.params.seasonId}/episode`);
                 } else if (!req.form.isValid) {
                     data.errors = req.form.getErrors();
                     data.form = req.form;
                     data.series = {_id: req.params.seriesId};
+                    data.season = {_id: req.params.seasonId};
 
-                    res.render('series/season/add', data);
+                    res.render('series/season/episode/add', data);
                 } else {
                     var seriesId = req.params.seriesId,
-                        season = {
+                        seasonId = req.params.seasonId,
+                        episode = {
+                            _id: mongoose.Types.ObjectId(),
                             number: req.form.number,
                             name: req.form.name,
                             description: req.form.description,
@@ -59,24 +65,20 @@ routes = function () {
 
                     data.errors = {};
                     data.series = {_id: seriesId};
+                    data.season = {_id: seasonId};
                     data.form = req.form;
 
                     models.series
-                        .find({_id: seriesId, "seasons.number": season.number})
-                        .then(function (series) {
-                            if (series.length) {
-                                data.errors.seasonExists = 'Season with this number already exist';
-                                res.render('series/season/add', data);
-                                throw data.errors.seasonExists;
+                        .update({
+                            _id: seriesId,
+                            'seasons._id': seasonId
+                        }, {
+                            $push: {
+                                'seasons.$.episodes': episode
                             }
-                            return models.series.findById(seriesId);
                         })
                         .then(function (series) {
-                            series.seasons.push(season);
-                            return series.save();
-                        })
-                        .then(function (series) {
-                            res.redirect('/series/' + series._id + '/season')
+                            res.redirect(`/series/${seriesId}/season/${seasonId}/episode/${episode._id.toString()}`);
                         })
                         .catch(function(err) {
                             errorHandler(err, res);

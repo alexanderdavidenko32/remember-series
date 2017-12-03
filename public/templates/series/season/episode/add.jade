@@ -1,0 +1,32 @@
+//
+   Created by Alexander Davidenko 
+   @date 11/30/17.
+extends ../../../index
+
+block content
+  if errors.episodeExists
+    h2 #{errors.episodeExists}
+  form(action="/series/#{series._id}/season/#{season._id}/episode/add" method="post")
+    fieldset
+      if errors && errors.number
+        span.error #{errors.number}
+      label number
+         input(name="number" value="#{form.number ? form.number : ''}")
+      if errors && errors.name
+        span.error #{errors.name}
+      label name
+        input(name="name" value="#{form.name ? form.name : ''}")
+      if errors && errors.description
+        span.error #{errors.description}
+      label description
+        input(name="description" value="#{form.description ? form.description : ''}")
+      if errors && errors.poster
+        span.error #{errors.poster}
+      label poster
+        input(name="poster" value="#{form.poster ? form.poster : ''}")
+      if errors && errors.year
+        span.error #{errors.year}
+      label year
+        input(name="year" value="#{form.year ? form.year : ''}")
+      input(type="hidden" name="_csrf" value="#{_csrf}")
+      input(type="submit")
