@@ -3,6 +3,6 @@ extends ../../index
 block content
   a(href="/series/#{series._id}/season/add") add season
   ul
-    each season in series.seasons
-      li #{season.number} name: #{season.name}
+    each season in seasons
+      li #{season.number} name: #{season.name} #{season.creator}
         a(href="/series/#{series._id}/season/#{season._id}") view

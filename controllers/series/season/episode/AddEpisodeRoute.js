@@ -7,6 +7,7 @@ var express = require('express'),
     mongoose = require('mongoose'),
 
     errorHandler = require('../../../../lib/error-handler'),
+    Helper = require('../../../../lib/Helper'),
     models = require('../../../../models');
 
 routes = function () {
@@ -69,14 +70,23 @@ routes = function () {
                     data.form = req.form;
 
                     models.series
-                        .update({
-                            _id: seriesId,
-                            'seasons._id': seasonId
-                        }, {
-                            $push: {
-                                'seasons.$.episodes': episode
+                        .update(
+                            {
+                                _id: seriesId,
+                                $or: Helper.getCreatorCondition('creator', req),
+                                $and: [
+                                    {
+                                        $or: Helper.getCreatorCondition('seasons.creator', req)
+                                    }
+                                ],
+                                'seasons._id': seasonId
+                            },
+                            {
+                                $push: {
+                                    'seasons.$.episodes': episode
+                                }
                             }
-                        })
+                        )
                         .then(function (series) {
                             res.redirect(`/series/${seriesId}/season/${seasonId}/episode/${episode._id.toString()}`);
                         })

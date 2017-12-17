@@ -12,7 +12,7 @@ var cookieParser = require('cookie-parser'),
 module.exports = function(app) {
     var connection = mongoose.connection,
         connectionUri = 'mongodb://' + connection.host + ':' + connection.port + '/' + connection.name;
-        oneMonth = 24*3600*1000*30,
+        oneMonth = 24*3600*1000*30;
 
     app.use(cookieParser());
     app.use(bodyParser.json());

@@ -1,10 +1,12 @@
 var express = require('express'),
     router = express.Router({mergeParams: true}),
+    mongoose = require('mongoose'),
 
     form = require('express-form2'),
     field = form.field,
 
     errorHandler = require('../../../lib/error-handler'),
+    Helper = require('../../../lib/Helper'),
     models = require('../../../models');
 
 routes = function () {
@@ -62,16 +64,20 @@ routes = function () {
                     data.form = req.form;
 
                     models.series
-                        .find({_id: seriesId, "seasons.number": season.number})
-                        .then(function (series) {
-                            if (series.length) {
-                                data.errors.seasonExists = 'Season with this number already exist';
-                                res.render('series/season/add', data);
-                                throw data.errors.seasonExists;
-                            }
-                            return models.series.findById(seriesId);
+                        .findOne({
+                            _id: seriesId,
+                            $or: Helper.getCreatorCondition('creator', req)
                         })
+                        //.then(function (series) {
+                            //if (series.length) {
+                            //    data.errors.seasonExists = 'Season with this number already exist';
+                            //    res.render('series/season/add', data);
+                            //    throw data.errors.seasonExists;
+                            //}
+                            //return models.series.findById(seriesId);
+                        //})
                         .then(function (series) {
+                            //console.log(series);
                             series.seasons.push(season);
                             return series.save();
                         })

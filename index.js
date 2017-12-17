@@ -9,7 +9,7 @@ var express = require('express'),
     app = express(),
     models = require('./models'),
     server;
-
+//TODO: domain
 mongoose.connect(connectionUri, { useMongoClient: true });
 
 mongoose.Promise = global.Promise;
