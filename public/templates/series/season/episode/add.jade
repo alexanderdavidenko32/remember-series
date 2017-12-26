@@ -6,7 +6,7 @@ extends ../../../index
 block content
   if errors.episodeExists
     h2 #{errors.episodeExists}
-  form(action="/series/#{series._id}/season/#{season._id}/episode/add" method="post")
+  form(action="/series/#{series._id}/season/#{season._id}/episode/#{form.mode}?_method=#{form.method}" method="post")
     fieldset
       if errors && errors.number
         span.error #{errors.number}
@@ -28,5 +28,13 @@ block content
         span.error #{errors.year}
       label year
         input(name="year" value="#{form.year ? form.year : ''}")
+      if form.progress
+        label time
+          input(name="time" value="#{form.progress.time ? form.progress.time : ''}")
+        label is watched
+          if form.progress.isWatched
+            input(name="isWatched" type="checkbox" checked)
+          else
+            input(name="isWatched" type="checkbox")
       input(type="hidden" name="_csrf" value="#{_csrf}")
       input(type="submit")

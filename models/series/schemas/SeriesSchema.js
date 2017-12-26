@@ -33,6 +33,6 @@ var seriesSchema = mongoose.Schema({
     progress: [progressSchema],
     seasons: [seasonSchema]
 
-});
+}, { usePushEach: true });
 
 module.exports = seriesSchema;

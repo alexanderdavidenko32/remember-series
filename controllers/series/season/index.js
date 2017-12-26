@@ -1,21 +1,20 @@
 var express = require('express'),
     router = express.Router({mergeParams: true}),
 
-    EpisodeRoute = require('./episode'),
-
-    seasonRouter = require('./Season');
+    EpisodeRoute = require('./episode');
 
 routes = function () {
+    let Season = require('./Season');
 
     router
         .route('/')
-        .get(seasonRouter.getSeasons);
+        .get(Season.getSeasons);
 
-    router.use('/add', seasonRouter.addSeasonRoute());
+    router.use('/add', Season.addSeasonRoute());
 
     router
         .route('/:seasonId')
-        .get(seasonRouter.getSeason);
+        .get(Season.getSeason);
 
     router.use('/:seasonId/episode', EpisodeRoute);
 

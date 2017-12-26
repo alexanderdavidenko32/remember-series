@@ -29,6 +29,6 @@ var seasonSchema = mongoose.Schema({
     progress: [progressSchema],
     episodes: [episodeSchema]
 
-});
+}, { usePushEach: true });
 
 module.exports = seasonSchema;

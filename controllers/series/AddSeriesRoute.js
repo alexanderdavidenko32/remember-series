@@ -42,12 +42,14 @@ routes = function () {
                     data.form = req.form;
                     res.render('series/add', data);
                 } else {
+                    let progress = new models.progress({_id: req.user.id});
                     let series = new models.series({
                         name: req.form.name,
                         description: req.form.description,
                         poster: req.form.poster,
                         year: req.form.year,
-                        creator: req.user._id
+                        creator: req.user._id,
+                        progress: [progress]
                     });
 
                     data.errors = {};

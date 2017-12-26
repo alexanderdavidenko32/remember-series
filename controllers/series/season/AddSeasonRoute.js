@@ -50,13 +50,16 @@ routes = function () {
                     res.render('series/season/add', data);
                 } else {
                     let seriesId = req.params.seriesId;
+                    let progress = new models.progress({_id: req.user.id});
+                    console.log(progress);
                     let season = new models.season({
                         number: req.form.number,
                         name: req.form.name,
                         description: req.form.description,
                         poster: req.form.poster,
                         year: req.form.year,
-                        creator: req.user._id
+                        creator: req.user._id,
+                        progress: [progress]
                     });
 
                     data.errors = {};

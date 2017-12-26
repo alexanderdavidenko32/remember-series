@@ -14,6 +14,8 @@ mongoose.connect(connectionUri, { useMongoClient: true });
 
 mongoose.Promise = global.Promise;
 
+mongoose.set('debug', true);
+
 app.set('views', './public/templates');
 app.set('view engine', 'jade');
 

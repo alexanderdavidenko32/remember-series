@@ -23,6 +23,6 @@ let episodeSchema = mongoose.Schema({
         required: true
     },
     progress: [progressSchema]
-});
+}, { usePushEach: true });
 
 module.exports = episodeSchema;

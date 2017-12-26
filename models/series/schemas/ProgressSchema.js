@@ -5,20 +5,20 @@
 let mongoose = require('mongoose');
 
 let progressSchema = mongoose.Schema({
-    isWatched: {
-        type: Boolean,
-        default: false
-    },
-    user: {
+    _id: {
         type: String,
         ref: 'User',
         required: true
+    },
+    isWatched: {
+        type: Boolean,
+        default: false
     },
     time: {
         type: Number,
         default: 0
     }
-});
+}, { usePushEach: true });
 
 module.exports = progressSchema;
 

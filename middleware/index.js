@@ -1,7 +1,7 @@
 var cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
     session = require('express-session'),
-    enrouten = require('express-enrouten'),
+    methodOverride = require('method-override'),
     MongoStore = require('connect-mongodb-session')(session),
     mongoose = require('mongoose'),
     lusca = require('lusca'),
@@ -43,8 +43,9 @@ module.exports = function(app) {
     }));
 
     app.use(checkUser());
+
+    // TODO: get rid after json api enabled
+    app.use(methodOverride('_method'));
+
     routes(app);
-    //app.use(enrouten({
-        //directory: '../controllers'
-    //}));
 };

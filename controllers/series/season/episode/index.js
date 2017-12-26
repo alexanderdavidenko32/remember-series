@@ -3,22 +3,22 @@
  * @date 11/28/17.
  */
 var express = require('express'),
-    router = express.Router({mergeParams: true}),
-
-    episodeRouter = require('./Episode');
+    router = express.Router({mergeParams: true});
 
 routes = function () {
+    let Episode = require('./Episode');
+
     router
         .route('/')
-        .get(episodeRouter.getEpisodes);
+        .get(Episode.getEpisodes);
 
-    router.use('/add', episodeRouter.addEpisodeRoute());
-    // todo: edit route
-    // router.use('/edit', episodeRouter.addEpisodeRoute());
+    router.use('/add', Episode.addEpisodeRoute());
 
     router
         .route('/:episodeId')
-        .get(episodeRouter.getEpisode);
+        .get(Episode.getEpisode.bind(Episode));
+
+    router.use('/:episodeId/edit', Episode.editEpisodeRoute());
 
     return router;
 };

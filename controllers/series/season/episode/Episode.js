@@ -5,6 +5,7 @@
 
 var mongoose = require('mongoose'),
     AddEpisodeRoute = require('./AddEpisodeRoute'),
+    EditEpisodeRoute = require('./EditEpisodeRoute'),
 
     models = require('../../../../models'),
     Error404 = require('../../../../lib/Error404'),
@@ -53,7 +54,7 @@ class Episode {
                 }
 
                 let nullProgress = new models.progress({
-                    user: req.user._id
+                    _id: Helper.getUserId(req)
                 });
 
                 return models.series
@@ -91,15 +92,7 @@ class Episode {
                         },
                         {
                             $match: {
-                                $or: Helper.getCreatorCondition('seasons.episodes.creator', req),
-                                $and: [
-                                    {
-                                        $or: [
-                                            { 'seasons.episodes.progress': { $exists: false } },
-                                            { 'seasons.episodes.progress.user': Helper.getUserId(req) }
-                                        ]
-                                    }
-                                ]
+                                $or: Helper.getCreatorCondition('seasons.episodes.creator', req)
                             }
                         },
                         {
@@ -110,7 +103,21 @@ class Episode {
                                 description: {$first: '$seasons.episodes.description'},
                                 poster: {$first: '$seasons.episodes.poster'},
                                 creator: {$first: '$seasons.episodes.creator'},
-                                progress: {$first: '$seasons.episodes.progress'}
+                                progress: {
+                                    $max: {
+                                        $cond: {
+                                            if: {
+                                                $or: [
+                                                    {
+                                                        $eq: ['$seasons.episodes.progress._id', Helper.getUserId(req)]
+                                                    }
+                                                ]
+                                            },
+                                            then: '$seasons.episodes.progress',
+                                            else: nullProgress
+                                        }
+                                    }
+                                }
                             }
                         },
                         {
@@ -121,16 +128,7 @@ class Episode {
                                 description: 1,
                                 poster: 1,
                                 creator: 1,
-                                progress: {
-                                    // $cond: {
-                                    //     if: {
-                                    //         $size: '$progress'
-                                    //     },
-                                    //     then: { $arrayElemAt: ['$progress', 0]},
-                                    //     else: nullProgress
-                                    // }
-                                    $ifNull: [ "$progress", nullProgress ]
-                                }
+                                progress: 1
                             }
                         }
                     )
@@ -148,6 +146,101 @@ class Episode {
                 errorHandler(err, res);
             });
 
+    }
+
+    getEpisodeQuery(req) {
+        let nullProgress = new models.progress({
+            _id: Helper.getUserId(req)
+        });
+
+        return models.series
+            .aggregate(
+                {
+                    $match: {
+                        $and: [
+                            { _id: mongoose.Types.ObjectId(req.params.seriesId) },
+                            {
+                                $or: Helper.getCreatorCondition('creator', req)
+                            }
+                        ]
+                    }
+                },
+                {
+                    $unwind: '$seasons'
+                },
+                {
+                    $unwind: '$seasons.episodes'
+                },
+                {
+                    $unwind: { path: '$seasons.episodes.progress', preserveNullAndEmptyArrays: true }
+                },
+                {
+                    $match: {
+                        $or: Helper.getCreatorCondition('seasons.creator', req),
+                        $and: [
+                            { 'seasons._id': mongoose.Types.ObjectId(req.params.seasonId) }
+                        ]
+                    }
+                },
+                {
+                    $match: {
+                        $or: Helper.getCreatorCondition('seasons.episodes.creator', req),
+                        $and: [
+                            { 'seasons.episodes._id': mongoose.Types.ObjectId(req.params.episodeId) }
+                        ]
+                    }
+                },
+                {
+                    $match: {
+                        $or: Helper.getCreatorCondition('seasons.episodes.creator', req)
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$seasons.episodes._id',
+                        name: {$first: '$seasons.episodes.name'},
+                        number: {$first: '$seasons.episodes.number'},
+                        description: {$first: '$seasons.episodes.description'},
+                        poster: {$first: '$seasons.episodes.poster'},
+                        creator: {$first: '$seasons.episodes.creator'},
+                        progress: {
+                            $max: {
+                                $cond: {
+                                    if: {
+                                        $or: [
+                                            {
+                                                $eq: ['$seasons.episodes.progress._id', Helper.getUserId(req)]
+                                            }
+                                        ]
+                                    },
+                                    then: '$seasons.episodes.progress',
+                                    else: nullProgress
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        name: 1,
+                        number: 1,
+                        description: 1,
+                        poster: 1,
+                        creator: 1,
+                        progress: 1
+                    }
+                }
+            )
+            .then(function(result) {
+                let episode = result[0];
+
+                if (!episode) {
+                    throw new Error404('wrong episode id');
+                }
+
+                return episode;
+            });
     }
 
     getEpisode(req, res) {
@@ -174,97 +267,7 @@ class Episode {
             //throw new Error404('wrong season id');
         }
 
-        let nullProgress = new models.progress({
-            user: req.user._id
-        });
-
-        models.series
-            .aggregate(
-                {
-                    $match: {
-                        $and: [
-                            { _id: mongoose.Types.ObjectId(req.params.seriesId) },
-                            {
-                                $or: Helper.getCreatorCondition('creator', req)
-                            }
-                        ]
-                    }
-                },
-                {
-                    $unwind: '$seasons'
-                },
-                // {
-                //     $match: {
-                //         'seasons._id': mongoose.Types.ObjectId(req.params.seasonId)
-                //     }
-                // },
-                {
-                    $unwind: '$seasons.episodes'
-                },
-                {
-                    $unwind: { path: '$seasons.episodes.progress', preserveNullAndEmptyArrays: true }
-                },
-                {
-                    $match: {
-                        $or: Helper.getCreatorCondition('seasons.creator', req),
-                        $and: [
-                            { 'seasons._id': mongoose.Types.ObjectId(req.params.seasonId) }
-                        ]
-                    }
-                },
-                {
-                    $match: {
-                        $or: Helper.getCreatorCondition('seasons.episodes.creator', req),
-                        $and: [
-                            { 'seasons.episodes._id': mongoose.Types.ObjectId(req.params.episodeId) }
-                        ]
-                    }
-                },
-                {
-                    $match: {
-                        $or: Helper.getCreatorCondition('seasons.episodes.creator', req),
-                        $and: [
-                            {
-                                $or: [
-                                    { 'seasons.episodes.progress': { $exists: false } },
-                                    { 'seasons.episodes.progress.user': Helper.getUserId(req) }
-                                ]
-                            }
-                        ]
-                    }
-                },
-                {
-                    $group: {
-                        _id: '$seasons.episodes._id',
-                        name: {$first: '$seasons.episodes.name'},
-                        number: {$first: '$seasons.episodes.number'},
-                        description: {$first: '$seasons.episodes.description'},
-                        poster: {$first: '$seasons.episodes.poster'},
-                        creator: {$first: '$seasons.episodes.creator'},
-                        progress: {$first: '$seasons.episodes.progress'}
-                    }
-                },
-                {
-                    $project: {
-                        _id: 1,
-                        name: 1,
-                        number: 1,
-                        description: 1,
-                        poster: 1,
-                        creator: 1,
-                        progress: { $ifNull: [ "$progress", nullProgress ] }
-                    }
-                }
-            )
-            .then(function(result) {
-                let episode = result[0];
-
-                if (!episode) {
-                    throw new Error404('wrong episode id');
-                }
-
-                return episode;
-            })
+        this.getEpisodeQuery(req)
             .then(function (episode) {
                 data.series = { _id: req.params.seriesId };
                 data.season = { _id: req.params.seasonId };
@@ -281,6 +284,10 @@ class Episode {
 
     addEpisodeRoute() {
         return AddEpisodeRoute;
+    }
+
+    editEpisodeRoute() {
+        return EditEpisodeRoute;
     }
 }
 

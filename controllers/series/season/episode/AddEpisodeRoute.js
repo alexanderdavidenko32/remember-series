@@ -24,7 +24,7 @@ routes = function () {
             } else {
                 data.user = req.user;
                 data._csrf = res.locals._csrf;
-                data.form = {};
+                data.form = { method: 'post', mode: 'add' };
                 data.errors = {};
                 data.series = {_id: req.params.seriesId};
                 data.season = {_id: req.params.seasonId};
@@ -55,6 +55,7 @@ routes = function () {
                     let seriesId = req.params.seriesId,
                         seasonId = req.params.seasonId;
 
+                    let progress = new models.progress({_id: req.user._id});
                     let episode = new models.episode({
                         _id: mongoose.Types.ObjectId(),
                         number: req.form.number,
@@ -62,7 +63,8 @@ routes = function () {
                         description: req.form.description,
                         poster: req.form.poster,
                         year: req.form.year,
-                        creator: req.user._id
+                        creator: req.user._id,
+                        progress: [progress]
                     });
 
                     data.errors = {};
