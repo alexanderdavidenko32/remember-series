@@ -1,17 +1,18 @@
 var cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
     session = require('express-session'),
-    enrouten = require('express-enrouten'),
+    methodOverride = require('method-override'),
     MongoStore = require('connect-mongodb-session')(session),
     mongoose = require('mongoose'),
     lusca = require('lusca'),
+    routes = require('../controllers'),
 
     checkUser = require('./check-user');
 
 module.exports = function(app) {
     var connection = mongoose.connection,
         connectionUri = 'mongodb://' + connection.host + ':' + connection.port + '/' + connection.name;
-        oneMonth = 24*3600*1000*30,
+        oneMonth = 24*3600*1000*30;
 
     app.use(cookieParser());
     app.use(bodyParser.json());
@@ -42,7 +43,9 @@ module.exports = function(app) {
     }));
 
     app.use(checkUser());
-    app.use(enrouten({
-        directory: '../controllers'
-    }));
+
+    // TODO: get rid after json api enabled
+    app.use(methodOverride('_method'));
+
+    routes(app);
 };

@@ -7,16 +7,18 @@ html
     ul
       li
         a(href="/") index
-      li
-        a(href="/login") login
-      li
-        a(href="/logout") logout
-      li
-        a(href="/register") register
+      if user
+        li
+          a(href="/logout") logout
+      else
+        li
+          a(href="/login") login
+        li
+          a(href="/signup") sign up
       li
         a(href="/series") series
+    h1= message
     block content
-      h1= message
       if user
         h2 hello #{user._id}
 

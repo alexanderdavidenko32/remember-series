@@ -1,7 +1,13 @@
 var mongoose = require('mongoose'),
-    episodeSchema = require('./EpisodeSchema');
+    episodeSchema = require('./EpisodeSchema'),
+    progressSchema = require('./ProgressSchema');
 
 var seasonSchema = mongoose.Schema({
+    number: {
+        type: Number,
+        required: true,
+        min: 0
+    },
     name: {
         type: String,
         required: true
@@ -15,12 +21,14 @@ var seasonSchema = mongoose.Schema({
     year: {
         type: Number
     },
-    number: {
-        type: Number,
+    creator: {
+        type: String,
+        ref: 'User',
         required: true
     },
+    progress: [progressSchema],
     episodes: [episodeSchema]
 
-});
+}, { usePushEach: true });
 
 module.exports = seasonSchema;

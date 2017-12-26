@@ -1,22 +1,28 @@
-extends ../index
+extends ../../index
 
 block content
-  form(action="/series/add" method="post")
+  if errors.seasonExists
+    h2 #{errors.seasonExists}
+  form(action="/series/#{series._id}/season/add" method="post")
     fieldset
+      if errors && errors.number
+        span.error #{errors.number}
+      label number
+         input(name="number" value="#{form.number ? form.number : ''}")
       if errors && errors.name
-          span.error #{errors.name}
+        span.error #{errors.name}
       label name
         input(name="name" value="#{form.name ? form.name : ''}")
       if errors && errors.description
-          span.error #{errors.description}
+        span.error #{errors.description}
       label description
         input(name="description" value="#{form.description ? form.description : ''}")
       if errors && errors.poster
-          span.error #{errors.poster}
+        span.error #{errors.poster}
       label poster
         input(name="poster" value="#{form.poster ? form.poster : ''}")
       if errors && errors.year
-          span.error #{errors.year}
+        span.error #{errors.year}
       label year
         input(name="year" value="#{form.year ? form.year : ''}")
       input(type="hidden" name="_csrf" value="#{_csrf}")

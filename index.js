@@ -4,21 +4,23 @@ var express = require('express'),
     config = require('./config/config.json'),
     middleware = require('./middleware'),
 
-    connectionUri = 'mongodb://' + config.db.host + ':' + config.db.port + '/' + config.db.database,
+    connectionUri = `mongodb://${config.db.host}:${config.db.port}/${config.db.database}`,
 
-    app = express();
-
-mongoose.connect(connectionUri);
+    app = express(),
+    models = require('./models'),
+    server;
+//TODO: domain
+mongoose.connect(connectionUri, { useMongoClient: true });
 
 mongoose.Promise = global.Promise;
+
+mongoose.set('debug', true);
 
 app.set('views', './public/templates');
 app.set('view engine', 'jade');
 
 middleware(app);
 
-var models = require('./models');
-
-var server = app.listen(config.port, function(err) {
-    console.log('app started. http://localhost:' + config.port);
+server = app.listen(config.port, function(err) {
+    console.log(`app started. http://localhost: ${config.port}`);
 });

@@ -1,6 +1,12 @@
-var mongoose = require('mongoose');
+let mongoose = require('mongoose'),
+    progressSchema = require('./ProgressSchema');
 
-var episodeSchema = mongoose.Schema({
+let episodeSchema = mongoose.Schema({
+    number: {
+        type: Number,
+        required: true,
+        min: 0
+    },
     name: {
         type: String,
         required: true
@@ -11,10 +17,12 @@ var episodeSchema = mongoose.Schema({
     poster: {
         type: String
     },
-    number: {
-        type: Number,
+    creator: {
+        type: String,
+        ref: 'User',
         required: true
-    }
-});
+    },
+    progress: [progressSchema]
+}, { usePushEach: true });
 
 module.exports = episodeSchema;

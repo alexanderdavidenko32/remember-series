@@ -1,17 +1,19 @@
 var bcrypt = require('bcrypt'),
     form = require('express-form2'),
     field = form.field,
+    express = require('express'),
+    router = express.Router(),
 
     models = require('../models'),
-    errorHandler = require('../lib/error-handler');
+    errorHandler = require('../lib/error-handler'),
+    routes;
 
-module.exports = function (router) {
+routes = function () {
     var data = {
         title: 'Login',
-        message: 'Login page',
-        errors: {}
+        message: 'Login page'
     };
-    router.get('/', function (req, res) {
+    router.route('/').get(function (req, res) {
         if (req.user) {
             res.redirect('/');
         } else {
@@ -19,8 +21,8 @@ module.exports = function (router) {
             data.errors = {};
             res.render('login', data);
         }
-    });
-    router.post('/',
+    })
+    .post(
         form(
             field('login').trim().required().isEmail('should be email'),
             field('password').required()
@@ -51,4 +53,6 @@ module.exports = function (router) {
                 });
             }
         });
+    return router;
 };
+module.exports = routes();

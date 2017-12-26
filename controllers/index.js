@@ -1,11 +1,22 @@
-module.exports = function (router) {
-    router.get('/', function (req, res) {
-        var data = {
-            title: 'Hello',
-            message: 'Index page',
-            user: req.user
-        };
-        //console.log(req.session.id, req.session.user);
-        res.render('index', data);
-    });
+var IndexRoute = require('./IndexRoute'),
+    LoginRoute = require('./LoginRoute'),
+    LogoutRoute = require('./LogoutRoute'),
+    SignUpRoute = require('./SignUpRoute'),
+    SeriesRoute = require('./series'),
+    ErrorsRoute = require('./errors'),
+    routes;
+
+routes = function(app) {
+    app.get('/', IndexRoute);
+    app.use('/login', LoginRoute);
+    app.get('/logout', LogoutRoute);
+    app.use('/signup', SignUpRoute);
+
+    app.use('/series', SeriesRoute);
+    app.use('/errors', ErrorsRoute);
+
+
+    // TODO: 404 route
+    //app.get('*', IndexRoute)
 };
+module.exports = routes;

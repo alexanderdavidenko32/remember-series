@@ -1,14 +1,12 @@
-extends ../index.jade
+extends ../index
 
 block content
-  h1= message
-
   if user
     a(href="series/add") add series
   ul
     each series in seriesList
       li
-        span #{series._id} - #{series.name}
+        span #{series._id} - #{series.name} - #{series.creator}
         a(href="series/#{series._id}") view
 
 

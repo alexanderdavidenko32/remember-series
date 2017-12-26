@@ -1,7 +1,6 @@
-extends ./index.jade
+extends ./index
 
 block content
-  h1 #{message} !!
   if errors.error
     h2 #{errors.error}
   form(action="/login" method="post")
