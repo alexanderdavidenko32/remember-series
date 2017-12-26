@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    episodeSchema = require('./EpisodeSchema');
+    episodeSchema = require('./EpisodeSchema'),
+    progressSchema = require('./ProgressSchema');
 
 var seasonSchema = mongoose.Schema({
     number: {
@@ -25,6 +26,7 @@ var seasonSchema = mongoose.Schema({
         ref: 'User',
         required: true
     },
+    progress: [progressSchema],
     episodes: [episodeSchema]
 
 });

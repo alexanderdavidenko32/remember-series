@@ -52,17 +52,18 @@ routes = function () {
 
                     res.render('series/season/episode/add', data);
                 } else {
-                    var seriesId = req.params.seriesId,
-                        seasonId = req.params.seasonId,
-                        episode = {
-                            _id: mongoose.Types.ObjectId(),
-                            number: req.form.number,
-                            name: req.form.name,
-                            description: req.form.description,
-                            poster: req.form.poster,
-                            year: req.form.year,
-                            creator: req.user._id
-                        };
+                    let seriesId = req.params.seriesId,
+                        seasonId = req.params.seasonId;
+
+                    let episode = new models.episode({
+                        _id: mongoose.Types.ObjectId(),
+                        number: req.form.number,
+                        name: req.form.name,
+                        description: req.form.description,
+                        poster: req.form.poster,
+                        year: req.form.year,
+                        creator: req.user._id
+                    });
 
                     data.errors = {};
                     data.series = {_id: seriesId};

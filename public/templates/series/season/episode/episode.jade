@@ -10,4 +10,7 @@ block content
   div poster:
     img(src="#{episode.poster}")
   div year: #{episode.year}
+  if episode.progress
+    div is watched: #{episode.progress.isWatched}
+    div time: #{episode.progress.time}
   a(href="/series/#{series._id}/season/#{season._id}/episode") list of episodes

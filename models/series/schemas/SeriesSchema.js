@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    seasonSchema = require('./SeasonSchema');
+    seasonSchema = require('./SeasonSchema'),
+    progressSchema = require('./ProgressSchema');
 
 var seriesSchema = mongoose.Schema({
     //_id: {
@@ -29,6 +30,7 @@ var seriesSchema = mongoose.Schema({
         //type: Array
     //},
     //
+    progress: [progressSchema],
     seasons: [seasonSchema]
 
 });

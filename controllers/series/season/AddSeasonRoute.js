@@ -49,15 +49,15 @@ routes = function () {
 
                     res.render('series/season/add', data);
                 } else {
-                    var seriesId = req.params.seriesId,
-                        season = {
-                            number: req.form.number,
-                            name: req.form.name,
-                            description: req.form.description,
-                            poster: req.form.poster,
-                            year: req.form.year,
-                            creator: req.user._id
-                        };
+                    let seriesId = req.params.seriesId;
+                    let season = new models.season({
+                        number: req.form.number,
+                        name: req.form.name,
+                        description: req.form.description,
+                        poster: req.form.poster,
+                        year: req.form.year,
+                        creator: req.user._id
+                    });
 
                     data.errors = {};
                     data.series = {_id: seriesId};

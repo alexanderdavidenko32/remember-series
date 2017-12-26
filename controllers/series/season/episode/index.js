@@ -13,6 +13,8 @@ routes = function () {
         .get(episodeRouter.getEpisodes);
 
     router.use('/add', episodeRouter.addEpisodeRoute());
+    // todo: edit route
+    // router.use('/edit', episodeRouter.addEpisodeRoute());
 
     router
         .route('/:episodeId')

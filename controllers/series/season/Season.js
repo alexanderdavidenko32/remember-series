@@ -173,6 +173,7 @@ class Season {
                         creator: {$first: '$seasons.creator'},
                         episodes: {$push: '$seasons.episodes'}
                     }
+                    // TODO: progress
                 }
             )
                    //.populate('creator')
