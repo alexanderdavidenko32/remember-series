@@ -98,18 +98,18 @@ class Episode {
                         {
                             $group: {
                                 _id: '$seasons.episodes._id',
-                                number: {$first: '$seasons.episodes.number'},
-                                name: {$first: '$seasons.episodes.name'},
-                                description: {$first: '$seasons.episodes.description'},
-                                poster: {$first: '$seasons.episodes.poster'},
-                                creator: {$first: '$seasons.episodes.creator'},
+                                number: { $first: '$seasons.episodes.number' },
+                                name: { $first: '$seasons.episodes.name' },
+                                description: { $first: '$seasons.episodes.description' },
+                                poster: { $first: '$seasons.episodes.poster' },
+                                creator: { $first: '$seasons.episodes.creator' },
                                 progress: {
                                     $max: {
                                         $cond: {
                                             if: {
                                                 $or: [
                                                     {
-                                                        $eq: ['$seasons.episodes.progress._id', Helper.getUserId(req)]
+                                                        $eq: [ '$seasons.episodes.progress._id', Helper.getUserId(req) ]
                                                     }
                                                 ]
                                             },
@@ -198,18 +198,18 @@ class Episode {
                 {
                     $group: {
                         _id: '$seasons.episodes._id',
-                        name: {$first: '$seasons.episodes.name'},
-                        number: {$first: '$seasons.episodes.number'},
-                        description: {$first: '$seasons.episodes.description'},
-                        poster: {$first: '$seasons.episodes.poster'},
-                        creator: {$first: '$seasons.episodes.creator'},
+                        name: { $first: '$seasons.episodes.name' },
+                        number: {$first: '$seasons.episodes.number' },
+                        description: { $first: '$seasons.episodes.description' },
+                        poster: { $first: '$seasons.episodes.poster' },
+                        creator: { $first: '$seasons.episodes.creator' },
                         progress: {
                             $max: {
                                 $cond: {
                                     if: {
                                         $or: [
                                             {
-                                                $eq: ['$seasons.episodes.progress._id', Helper.getUserId(req)]
+                                                $eq: [ '$seasons.episodes.progress._id', Helper.getUserId(req) ]
                                             }
                                         ]
                                     },
@@ -314,8 +314,8 @@ class Episode {
         });
 
         data.errors = {};
-        data.series = {_id: seriesId};
-        data.season = {_id: seasonId};
+        data.series = { _id: seriesId };
+        data.season = { _id: seasonId };
         data.form = requestBody;
 
         models.series
@@ -346,7 +346,7 @@ class Episode {
 
     editEpisode(req, res) {
         if (!req.user) {
-            res.redirect(`/series/${req.params.seriesId}/season/${req.params.seasonId}/episode`);
+            res.redirect(`/series/${req.params.seriesId}/season/${req.params.seasonId}/episode/${req.params.episodeId}`);
             return;
         }
         // } else if (!req.form.isValid) {

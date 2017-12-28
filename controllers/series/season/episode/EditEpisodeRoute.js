@@ -44,7 +44,6 @@ routes = function () {
 
                     // TODO: get rid after json api enabled
                     data.form.method = 'PUT';
-                    data.form.mode = `${data.form._id}/edit`;
                     // data.message = data.series.name + ' ' + data.season.name + ' ' + data.message;
 
                     // res.json({ data: episode });

@@ -1,3 +1,4 @@
+//TODO: get rid when json api is enabled
 let form = require('express-form2'),
     field = form.field,
 
@@ -21,7 +22,7 @@ routes = function () {
             } else {
                 data.user = req.user;
                 data._csrf = res.locals._csrf;
-                data.form = {};
+                data.form = {_id: '', method: 'POST'};
                 data.errors = {};
                 res.render('series/add', data);
             }
@@ -34,34 +35,6 @@ routes = function () {
                 field('year').isNumeric('year should be numeric')//.min(1900).max(2100)
             ),
             function(req, res) {
-
-                if (!req.user) {
-                    res.redirect('/series');
-                } else if (!req.form.isValid) {
-                    data.errors = req.form.getErrors();
-                    data.form = req.form;
-                    res.render('series/add', data);
-                } else {
-                    let progress = new models.progress({_id: req.user.id});
-                    let series = new models.series({
-                        name: req.form.name,
-                        description: req.form.description,
-                        poster: req.form.poster,
-                        year: req.form.year,
-                        creator: req.user._id,
-                        progress: [progress]
-                    });
-
-                    data.errors = {};
-
-                    models.series.create(series)
-                    .then(function(series) {
-                        res.redirect('/series/' + series._id);
-                    })
-                    .catch(function(err) {
-                        errorHandler(err, res);
-                    });
-                }
 
         });
 

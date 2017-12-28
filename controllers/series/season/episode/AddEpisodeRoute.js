@@ -25,7 +25,7 @@ routes = function () {
             } else {
                 data.user = req.user;
                 data._csrf = res.locals._csrf;
-                data.form = { method: 'post', _id: '' };
+                data.form = { method: 'POST', _id: '' };
                 data.errors = {};
                 data.series = {_id: req.params.seriesId};
                 data.season = {_id: req.params.seasonId};

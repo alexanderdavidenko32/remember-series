@@ -13,6 +13,7 @@ block content
   if episode.progress
     div is watched: #{episode.progress.isWatched}
     div time: #{episode.progress.time}
-  a(href="/series/#{series._id}/season/#{season._id}/episode/#{episode._id}/edit") edit
-  br
-  a(href="/series/#{series._id}/season/#{season._id}/episode") list of episodes
+  div
+    a(href="/series/#{series._id}/season/#{season._id}/episode/#{episode._id}/edit") edit
+  div
+    a(href="/series/#{series._id}/season/#{season._id}/episode") list of episodes

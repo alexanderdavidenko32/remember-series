@@ -10,6 +10,7 @@ block content
   if season.progress
     div is watched: #{season.progress.isWatched}
     div time: #{season.progress.time}
-  a(href="/series/#{series._id}/season/#{season._id}/edit") edit
-  br
-  a(href="/series/#{series._id}/season/#{season._id}/episode") list of eposdes
+  div
+    a(href="/series/#{series._id}/season/#{season._id}/edit") edit
+  div
+    a(href="/series/#{series._id}/season/#{season._id}/episode") list of eposdes

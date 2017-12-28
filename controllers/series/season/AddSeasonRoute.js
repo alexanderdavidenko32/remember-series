@@ -24,13 +24,10 @@ routes = function () {
             } else {
                 data.user = req.user;
                 data._csrf = res.locals._csrf;
-                data.form = {_id: ''};
-                data.form = {_id: ''};
+                // TODO: get rid after json api enabled
+                data.form = {_id: '', method: 'POST'};
                 data.errors = {};
                 data.series = {_id: req.params.seriesId};
-
-                // TODO: get rid after json api enabled
-                data.form.method = 'POST';
 
                 res.render('series/season/add', data);
             }

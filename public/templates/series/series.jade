@@ -6,6 +6,11 @@ block content
   div poster:
     img(src="#{series.poster}")
   div year: #{series.year}
+  if series.progress
+    div is watched: #{series.progress.isWatched}
+    div time: #{series.progress.time}
 
+  div
+    a(href="/series/#{series._id}/edit") edit
   div
     a(href="/series/#{series._id}/season") seasons list
