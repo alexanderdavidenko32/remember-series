@@ -2,12 +2,13 @@
  * Created by Alexander Davidenko
  * @date 11/30/17.
  */
-var models = require('../../../models'),
-    Helper = require('../../../lib/Helper'),
-    Error404 = require('../../../lib/Error404'),
-    errorHandler = require('../../../lib/error-handler'),
+let models = require.main.require('./models'),
+    Helper = require.main.require('./lib/Helper'),
+    Error404 = require.main.require('./lib/Error404'),
+    errorHandler = require.main.require('./lib/error-handler'),
 
     AddSeasonRoute = require('./AddSeasonRoute'),
+    EditSeasonRoute = require('./EditSeasonRoute'),
     mongoose = require('mongoose'),
 
     baseData = {
@@ -41,6 +42,10 @@ class Season {
                     throw new Error404('wrong series id');
                 }
 
+                let nullProgress = new models.progress({
+                    _id: Helper.getUserId(req)
+                });
+
                 return models.series
                     .aggregate(
                         {
@@ -52,23 +57,11 @@ class Season {
                             $unwind: { path: '$seasons', preserveNullAndEmptyArrays: true }
                         },
                         {
-                            $unwind: { path: '$seasons.episodes', preserveNullAndEmptyArrays: true }
-                        },
-                        {
                             $match: {
                                 $or:[
                                     { 'seasons': { $exists: false } },
                                     { 'seasons.creator': Helper.getAdminId() },
                                     { 'seasons.creator': Helper.getUserId(req) }
-                                ]
-                            }
-                        },
-                        {
-                            $match: {
-                                $or: [
-                                    { 'seasons.episodes': { $exists: false } },
-                                    { 'seasons.episodes.creator': Helper.getAdminId() },
-                                    { 'seasons.episodes.creator': Helper.getUserId(req) }
                                 ]
                             }
                         },
@@ -86,7 +79,21 @@ class Season {
                                 poster: {$first: '$seasons.poster'},
                                 year: {$first: '$seasons.year'},
                                 creator: {$first: '$seasons.creator'},
-                                episodes: {$push: '$seasons.episodes'}
+                                progress: {
+                                    $max: {
+                                        $cond: {
+                                            if: {
+                                                $or: [
+                                                    {
+                                                        $eq: ['$seasons.progress._id', Helper.getUserId(req)]
+                                                    }
+                                                ]
+                                            },
+                                            then: '$seasons.progress',
+                                            else: nullProgress
+                                        }
+                                    }
+                                }
                             }
                         }
                     )
@@ -98,7 +105,7 @@ class Season {
                         //data.title = data.title;
                         //data.message = data.message;
 
-                        //res.json({data: seasons});
+                        // res.json({data: seasons});
                         res.render('series/season/index', data);
                     })
             }).catch(function(err) {
@@ -106,22 +113,12 @@ class Season {
             });
     }
 
-    getSeason(req, res) {
-        if (!mongoose.Types.ObjectId.isValid(req.params.seriesId)) {
-            // TODO: refactor
-            res.redirect('/errors/404');
-            return;
-            //throw new Error404('wrong series id');
-        }
+    getSeasonQuery(req) {
+        let nullProgress = new models.progress({
+            _id: Helper.getUserId(req)
+        });
 
-        if (!mongoose.Types.ObjectId.isValid(req.params.seasonId)) {
-            // TODO: refactor
-            res.redirect('/errors/404');
-            return;
-            //throw new Error404('wrong season id');
-        }
-
-        models.series
+        return models.series
             .aggregate(
                 {
                     $match: {
@@ -140,7 +137,7 @@ class Season {
                     $unwind: { path: '$seasons', preserveNullAndEmptyArrays: true }
                 },
                 {
-                    $unwind: { path: '$seasons.episodes', preserveNullAndEmptyArrays: true }
+                    $unwind: { path: '$seasons.progress', preserveNullAndEmptyArrays: true }
                 },
                 {
                     $match: {
@@ -154,15 +151,6 @@ class Season {
                     }
                 },
                 {
-                    $match: {
-                        $or: [
-                            { 'seasons.episodes': { $exists: false } },
-                            { 'seasons.episodes.creator': Helper.getAdminId() },
-                            { 'seasons.episodes.creator': Helper.getUserId(req) }
-                        ]
-                    }
-                },
-                {
                     $group: {
                         _id: '$seasons._id',
                         name: {$first: '$seasons.name'},
@@ -171,12 +159,24 @@ class Season {
                         poster: {$first: '$seasons.poster'},
                         year: {$first: '$seasons.year'},
                         creator: {$first: '$seasons.creator'},
-                        episodes: {$push: '$seasons.episodes'}
+                        progress: {
+                            $max: {
+                                $cond: {
+                                    if: {
+                                        $or: [
+                                            {
+                                                $eq: ['$seasons.progress._id', Helper.getUserId(req)]
+                                            }
+                                        ]
+                                    },
+                                    then: '$seasons.progress',
+                                    else: nullProgress
+                                }
+                            }
+                        }
                     }
-                    // TODO: progress
                 }
             )
-                   //.populate('creator')
             .then(function(result) {
                 let series = result[0];
 
@@ -188,18 +188,168 @@ class Season {
 
                 return result[0];
             })
+    }
+
+    getSeason(req, res) {
+        if (!mongoose.Types.ObjectId.isValid(req.params.seriesId)) {
+            // TODO: refactor
+            res.redirect('/errors/404');
+            return;
+            //throw new Error404('wrong series id');
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.seasonId)) {
+            // TODO: refactor
+            res.redirect('/errors/404');
+            return;
+            //throw new Error404('wrong season id');
+        }
+
+        this.getSeasonQuery(req)
             .then(function (result) {
                 let data = {...baseData};
 
                 data.series = {_id: req.params.seriesId};
                 data.season = result;
                 //data.message = result.series.name + ' ' + data.message;
-                //res.json({data: result});
+
+                // res.json({data: result});
                 res.render('series/season/season', data)
             })
             .catch(function(err) {
                 errorHandler(err, res);
             });
+    }
+
+    addSeason(req, res) {
+
+        if (!req.user) {
+            res.redirect('/series/' + req.params.seriesId + '/season');
+            return;
+        }
+        // } else if (!req.form.isValid) {
+        //     data.errors = req.form.getErrors();
+        //     data.form = req.form;
+        //     data.series = {_id: req.params.seriesId};
+        //
+        //     res.render('series/season/add', data);
+
+        let data = {};
+        let requestBody = req.body;
+
+        let seriesId = req.params.seriesId;
+        let progress = new models.progress({_id: req.user.id});
+        let season = new models.season({
+            number: requestBody.number,
+            name: requestBody.name,
+            description: requestBody.description,
+            poster: requestBody.poster,
+            year: requestBody.year,
+            creator: req.user._id,
+            progress: [progress]
+        });
+
+        data.errors = {};
+        data.series = {_id: seriesId};
+        data.form = requestBody;
+
+        models.series
+            .findOne({
+                _id: seriesId,
+                $or: Helper.getCreatorCondition('creator', req)
+            })
+            //.then(function (series) {
+                //if (series.length) {
+                //    data.errors.seasonExists = 'Season with this number already exist';
+                //    res.render('series/season/add', data);
+                //    throw data.errors.seasonExists;
+                //}
+                //return models.series.findById(seriesId);
+            //})
+            .then(function (series) {
+                //console.log(series);
+                series.seasons.push(season);
+                return series.save();
+            })
+            .then(function (series) {
+                res.redirect('/series/' + series._id + '/season')
+            })
+            .catch(function(err) {
+                errorHandler(err, res);
+            });
+    }
+
+    editSeason(req, res) {
+        if (!req.user) {
+            res.redirect(`/series/${req.params.seriesId}/season/${req.params.seasonId}/episode`);
+            return;
+        }
+        // } else if (!req.form.isValid) {
+        //     data.errors = req.form.getErrors();
+        //     data.form = req.form;
+        //     data.series = {_id: req.params.seriesId};
+        //     data.season = {_id: req.params.seasonId};
+        //
+        //     res.render('series/season/episode/add', data);
+        let data = {};
+        let seriesId = req.params.seriesId,
+            seasonId = req.params.seasonId;
+
+        let requestBody = req.body;
+
+        data.errors = {};
+        data.series = {_id: seriesId};
+        data.season = {_id: seasonId};
+        data.form = requestBody;
+
+        models.series
+            .findOne({
+                _id: seriesId,
+                $or: Helper.getCreatorCondition('creator', req)
+            })
+            .then(function (series) {
+                let season = series.seasons.id(seasonId);
+
+                if (!season || !Helper.checkAccessToObject(season, req.user._id)) {
+                    throw new Error404('wrong season id');
+                }
+
+                if (Helper.isUsersObject(season, req.user._id)) {
+                    season.set({
+                        name: requestBody.name,
+                        description: requestBody.description,
+                        poster: requestBody.poster,
+                        year: requestBody.year,
+                    });
+                }
+
+                let progress = season.progress.id(Helper.getUserId(req));
+
+                if (!progress) {
+                    season.progress.push(new models.progress({
+                        _id: req.user._id,
+                        isWatched: !!requestBody.isWatched,
+                        time: requestBody.time || 0
+                    }));
+                } else {
+                    progress.set({
+                        isWatched: !!requestBody.isWatched,
+                        time: requestBody.time || progress.time
+                    })
+                }
+
+                series.save();
+            })
+            .then(function () {
+                res.redirect(`/series/${seriesId}/season/${seasonId}`);
+            })
+            .catch(function(err) {
+                errorHandler(err, res);
+            });
+    }
+
+    editSeasonRoute() {
+        return EditSeasonRoute;
     }
 
     addSeasonRoute() {

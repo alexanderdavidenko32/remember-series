@@ -7,4 +7,9 @@ block content
   div poster:
     img(src="#{season.poster}")
   div year: #{season.year}
+  if season.progress
+    div is watched: #{season.progress.isWatched}
+    div time: #{season.progress.time}
+  a(href="/series/#{series._id}/season/#{season._id}/edit") edit
+  br
   a(href="/series/#{series._id}/season/#{season._id}/episode") list of eposdes

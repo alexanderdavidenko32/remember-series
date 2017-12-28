@@ -1,4 +1,5 @@
-var express = require('express'),
+//TODO: get rid when json api is enabled
+let express = require('express'),
     router = express.Router({mergeParams: true}),
 
     form = require('express-form2'),
@@ -6,12 +7,12 @@ var express = require('express'),
 
     mongoose = require('mongoose'),
 
-    errorHandler = require('../../../../lib/error-handler'),
-    Helper = require('../../../../lib/Helper'),
-    models = require('../../../../models');
+    errorHandler = require.main.require('./lib/error-handler'),
+    Helper = require.main.require('./lib/Helper'),
+    models = require.main.require('./models');
 
 routes = function () {
-    var data = {
+    let data = {
         title: 'Episode add',
         message: 'Episode add page'
     };
@@ -24,7 +25,7 @@ routes = function () {
             } else {
                 data.user = req.user;
                 data._csrf = res.locals._csrf;
-                data.form = { method: 'post', mode: 'add' };
+                data.form = { method: 'post', _id: '' };
                 data.errors = {};
                 data.series = {_id: req.params.seriesId};
                 data.season = {_id: req.params.seasonId};
@@ -42,61 +43,7 @@ routes = function () {
             ),
             function(req, res) {
 
-                if (!req.user) {
-                    res.redirect(`/series/${req.params.seriesId}/season/${req.params.seasonId}/episode`);
-                } else if (!req.form.isValid) {
-                    data.errors = req.form.getErrors();
-                    data.form = req.form;
-                    data.series = {_id: req.params.seriesId};
-                    data.season = {_id: req.params.seasonId};
 
-                    res.render('series/season/episode/add', data);
-                } else {
-                    let seriesId = req.params.seriesId,
-                        seasonId = req.params.seasonId;
-
-                    let progress = new models.progress({_id: req.user._id});
-                    let episode = new models.episode({
-                        _id: mongoose.Types.ObjectId(),
-                        number: req.form.number,
-                        name: req.form.name,
-                        description: req.form.description,
-                        poster: req.form.poster,
-                        year: req.form.year,
-                        creator: req.user._id,
-                        progress: [progress]
-                    });
-
-                    data.errors = {};
-                    data.series = {_id: seriesId};
-                    data.season = {_id: seasonId};
-                    data.form = req.form;
-
-                    models.series
-                        .update(
-                            {
-                                _id: seriesId,
-                                $or: Helper.getCreatorCondition('creator', req),
-                                $and: [
-                                    {
-                                        $or: Helper.getCreatorCondition('seasons.creator', req)
-                                    }
-                                ],
-                                'seasons._id': seasonId
-                            },
-                            {
-                                $push: {
-                                    'seasons.$.episodes': episode
-                                }
-                            }
-                        )
-                        .then(function (series) {
-                            res.redirect(`/series/${seriesId}/season/${seasonId}/episode/${episode._id.toString()}`);
-                        })
-                        .catch(function(err) {
-                            errorHandler(err, res);
-                        });
-                }
 
         });
     return router;

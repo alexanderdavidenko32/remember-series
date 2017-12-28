@@ -1,14 +1,14 @@
-var form = require('express-form2'),
+let form = require('express-form2'),
     field = form.field,
 
     express = require('express'),
     router = express.Router({mergeParams: true}),
 
-    errorHandler = require('../../lib/error-handler'),
-    models = require('../../models');
+    errorHandler = require.main.require('./lib/error-handler'),
+    models = require.main.require('./models');
 
 routes = function () {
-    var data = {
+    let data = {
         title: 'Series add',
         message: 'Series add page'
     };

@@ -1,4 +1,4 @@
-var IndexRoute = require('./IndexRoute'),
+let IndexRoute = require('./IndexRoute'),
     LoginRoute = require('./LoginRoute'),
     LogoutRoute = require('./LogoutRoute'),
     SignUpRoute = require('./SignUpRoute'),

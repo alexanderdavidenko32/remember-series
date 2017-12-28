@@ -6,7 +6,7 @@ extends ../../../index
 block content
   if errors.episodeExists
     h2 #{errors.episodeExists}
-  form(action="/series/#{series._id}/season/#{season._id}/episode/#{form.mode}?_method=#{form.method}" method="post")
+  form(action="/series/#{series._id}/season/#{season._id}/episode/#{form._id}?_method=#{form.method}" method="post")
     fieldset
       if errors && errors.number
         span.error #{errors.number}

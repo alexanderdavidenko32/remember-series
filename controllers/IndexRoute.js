@@ -1,5 +1,5 @@
 module.exports = function (req, res) {
-    var data = {
+    let data = {
         title: 'Hello',
         message: 'Index page',
         user: req.user

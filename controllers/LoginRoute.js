@@ -1,15 +1,15 @@
-var bcrypt = require('bcrypt'),
+let bcrypt = require('bcrypt'),
     form = require('express-form2'),
     field = form.field,
     express = require('express'),
     router = express.Router(),
 
-    models = require('../models'),
-    errorHandler = require('../lib/error-handler'),
+    models = require.main.require('./models'),
+    errorHandler = require.main.require('./lib/error-handler'),
     routes;
 
 routes = function () {
-    var data = {
+    let data = {
         title: 'Login',
         message: 'Login page'
     };
@@ -34,7 +34,7 @@ routes = function () {
                 data.errors = req.form.getErrors();
                 res.render('login', data);
             } else {
-                var login = req.form.login,
+                let login = req.form.login,
                     password = req.form.password;
 
                 data.errors = {};
@@ -46,7 +46,6 @@ routes = function () {
                         data.errors.error = 'wrong username or password';
                         res.render('login', data);
                     }
-                    return;
                 })
                 .catch(function(err) {
                     errorHandler(err, res);

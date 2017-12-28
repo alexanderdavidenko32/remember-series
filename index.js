@@ -1,4 +1,4 @@
-var express = require('express'),
+let express = require('express'),
     mongoose = require('mongoose'),
 
     config = require('./config/config.json'),
@@ -9,6 +9,7 @@ var express = require('express'),
     app = express(),
     models = require('./models'),
     server;
+
 //TODO: domain
 mongoose.connect(connectionUri, { useMongoClient: true });
 

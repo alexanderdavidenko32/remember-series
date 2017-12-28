@@ -3,14 +3,14 @@
  * @date 12/3/17.
  */
 
-var mongoose = require('mongoose'),
+let mongoose = require('mongoose'),
     AddEpisodeRoute = require('./AddEpisodeRoute'),
     EditEpisodeRoute = require('./EditEpisodeRoute'),
 
-    models = require('../../../../models'),
-    Error404 = require('../../../../lib/Error404'),
-    errorHandler = require('../../../../lib/error-handler'),
-    Helper = require('../../../../lib/Helper'),
+    models = require.main.require('./models'),
+    Error404 = require.main.require('./lib/Error404'),
+    errorHandler = require.main.require('./lib/error-handler'),
+    Helper = require.main.require('./lib/Helper'),
 
     baseData = {
         title: 'Episode',
@@ -276,6 +276,144 @@ class Episode {
 
                 // res.json({ data: episode });
                 res.render('series/season/episode/episode', data)
+            })
+            .catch(function(err) {
+                errorHandler(err, res);
+            });
+    }
+
+    addEpisode(req, res) {
+        if (!req.user) {
+            res.redirect(`/series/${req.params.seriesId}/season/${req.params.seasonId}/episode`);
+            return;
+        }
+        // } else if (!req.form.isValid) {
+        //     data.errors = req.form.getErrors();
+        //     data.form = req.form;
+        //     data.series = {_id: req.params.seriesId};
+        //     data.season = {_id: req.params.seasonId};
+        //
+        //     res.render('series/season/episode/add', data);
+        // } else {
+        let data = {};
+        let requestBody = req.body;
+
+        let seriesId = req.params.seriesId,
+            seasonId = req.params.seasonId;
+
+        let progress = new models.progress({_id: req.user._id});
+        let episode = new models.episode({
+            _id: mongoose.Types.ObjectId(),
+            number: requestBody.number,
+            name: requestBody.name,
+            description: requestBody.description,
+            poster: requestBody.poster,
+            year: requestBody.year,
+            creator: req.user._id,
+            progress: [progress]
+        });
+
+        data.errors = {};
+        data.series = {_id: seriesId};
+        data.season = {_id: seasonId};
+        data.form = requestBody;
+
+        models.series
+            .update(
+                {
+                    _id: seriesId,
+                    $or: Helper.getCreatorCondition('creator', req),
+                    $and: [
+                        {
+                            $or: Helper.getCreatorCondition('seasons.creator', req)
+                        }
+                    ],
+                    'seasons._id': seasonId
+                },
+                {
+                    $push: {
+                        'seasons.$.episodes': episode
+                    }
+                }
+            )
+            .then(function (series) {
+                res.redirect(`/series/${seriesId}/season/${seasonId}/episode/${episode._id.toString()}`);
+            })
+            .catch(function(err) {
+                errorHandler(err, res);
+            });
+    }
+
+    editEpisode(req, res) {
+        if (!req.user) {
+            res.redirect(`/series/${req.params.seriesId}/season/${req.params.seasonId}/episode`);
+            return;
+        }
+        // } else if (!req.form.isValid) {
+        //     data.errors = req.form.getErrors();
+        //     data.form = req.form;
+        //     data.series = {_id: req.params.seriesId};
+        //     data.season = {_id: req.params.seasonId};
+        //
+        //     res.render('series/season/episode/add', data);
+        // } else {
+        let data = {};
+        let requestBody = req.body;
+        let seriesId = req.params.seriesId,
+            seasonId = req.params.seasonId,
+            episodeId = req.params.episodeId;
+
+        data.errors = {};
+        data.series = {_id: seriesId};
+        data.season = {_id: seasonId};
+        data.form = requestBody;
+
+        models.series
+            .findOne({
+                _id: seriesId,
+                $or: Helper.getCreatorCondition('creator', req)
+            })
+            .then(function (series) {
+                let season = series.seasons.id(seasonId);
+
+                if (!season || !Helper.checkAccessToObject(season, req.user._id)) {
+                    throw new Error404('wrong season id');
+                }
+
+                let episode = season.episodes.id(episodeId);
+
+                if (!episode || !Helper.checkAccessToObject(episode, req.user._id)) {
+                    throw new Error404('wrong episode id');
+                }
+
+                if (Helper.isUsersObject(episode, req.user._id)) {
+                    episode.set({
+                        name: requestBody.name,
+                        description: requestBody.description,
+                        poster: requestBody.poster,
+                        year: requestBody.year,
+                    });
+                }
+
+                let progress = episode.progress.id(Helper.getUserId(req));
+
+                if (!progress) {
+                    episode.progress.push(new models.progress({
+                        _id: req.user._id,
+                        isWatched: !!requestBody.isWatched,
+                        time: requestBody.time || 0
+                    }));
+                } else {
+                    progress.set({
+                        isWatched: !!requestBody.isWatched,
+                        time: requestBody.time || progress.time
+                    })
+                }
+
+                series.save();
+            })
+            .then(function () {
+                res.redirect(`/series/${seriesId}/season/${seasonId}/episode/${episodeId}`);
             })
             .catch(function(err) {
                 errorHandler(err, res);

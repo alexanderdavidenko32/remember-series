@@ -1,4 +1,4 @@
-var errorHandler = require('../lib/error-handler');
+let errorHandler = require.main.require('./lib/error-handler');
 
 module.exports = function (req, res) {
     req.session.destroy(function(err) {

@@ -1,15 +1,15 @@
-var bcrypt = require('bcrypt'),
+let bcrypt = require('bcrypt'),
     form = require('express-form2'),
     field = form.field,
     express = require('express'),
     router = express.Router(),
 
-    models = require('../models'),
-    errorHandler = require('../lib/error-handler'),
+    models = require.main.require('./models'),
+    errorHandler = require.main.require('./lib/error-handler'),
     routes;
 
 routes = function () {
-    var data = {
+    let data = {
         title: 'Sign up',
         message: 'Sign up page'
     };
@@ -34,7 +34,7 @@ routes = function () {
                 res.render('signup', data);
             } else {
 
-                var login = req.form.login,
+                let login = req.form.login,
                     password = req.form.password;
 
                 models.user.findById(login).then(function(user) {
@@ -45,10 +45,9 @@ routes = function () {
 
                         throw data.errors.userExists;
                     }
-                    return;
                 })
                 .then(function() {
-                    var salt = bcrypt.genSaltSync(),
+                    let salt = bcrypt.genSaltSync(),
                         passwordHash = bcrypt.hashSync(password, salt);
 
                     return models.user.create({
