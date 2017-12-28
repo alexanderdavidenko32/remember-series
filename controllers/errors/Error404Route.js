@@ -1,5 +1,10 @@
 module.exports =  function (req, res) {
-    var data = {
-    };
-    res.render('errors/404', data);
+    //TODO: replace with following when json api is enabled
+    /*res.status(404).json({
+        error: {
+            code: 404,
+            text: 'Not found'
+        }
+    });*/
+    res.render('errors/404', {});
 };
