@@ -1,13 +1,13 @@
 /**
  * Created by chrno on 12/19/15.
  */
-var express = require('express'),
+let express = require('express'),
     router = express.Router({mergeParams: true}),
-    Error500Route = require('./Error500Route'),
-    Error404Route = require('./Error404Route'),
-    routes;
 
-routes = function () {
+    Error500Route = require('./Error500Route'),
+    Error404Route = require('./Error404Route');
+
+let routes = function () {
     router
         .route('/500')
         .get(Error500Route);

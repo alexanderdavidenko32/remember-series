@@ -1,4 +1,4 @@
-module.exports =  function (req, res) {
+module.exports = function (req, res) {
     //TODO: replace with following when json api is enabled
     /*res.status(500).json({
         error: {
