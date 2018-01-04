@@ -4,6 +4,7 @@
  */
 let models = require.main.require('./models'),
     Helper = require.main.require('./lib/Helper'),
+    Error403 = require.main.require('./lib/Error403'),
     Error404 = require.main.require('./lib/Error404'),
     errorHandler = require.main.require('./lib/error-handler'),
 
@@ -209,7 +210,8 @@ class Season {
             .then(function (result) {
                 let data = {...baseData};
 
-                data.series = {_id: req.params.seriesId};
+                data._csrf = res.locals._csrf;
+                data.series = { _id: req.params.seriesId };
                 data.season = result;
                 //data.message = result.series.name + ' ' + data.message;
 
@@ -342,6 +344,44 @@ class Season {
             })
             .then(function () {
                 res.redirect(`/series/${seriesId}/season/${seasonId}`);
+            })
+            .catch(function(err) {
+                errorHandler(err, res);
+            });
+    }
+
+    deleteSeason(req, res) {
+        let seriesId = req.params.seriesId,
+            seasonId = req.params.seasonId;
+
+        if (!req.user) {
+            res.redirect(`/series/${seriesId}/season/${seasonId}`);
+            // res.status(401).end();
+            return;
+        }
+
+        models.series
+            .findOne({
+                _id: seriesId,
+                $or: Helper.getCreatorCondition('creator', req)
+            })
+            .then(function (series) {
+                let season = series.seasons.id(seasonId);
+
+                if (Helper.isUsersObject(season, req.user._id)) {
+                    series.seasons.pull({
+                        _id: mongoose.Types.ObjectId(seasonId)
+                    });
+
+                    series.save();
+                } else {
+                    throw new Error403('Forbidden');
+                }
+
+            })
+            .then(function () {
+                res.redirect(`/series/${seriesId}/season`);
+                // res.end();
             })
             .catch(function(err) {
                 errorHandler(err, res);

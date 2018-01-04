@@ -18,7 +18,8 @@ routes = function () {
     router
         .route('/:seasonId')
         .get(Season.getSeason.bind(Season))
-        .put(Season.editSeason);
+        .put(Season.editSeason)
+        .delete(Season.deleteSeason);
 
     //TODO: get rid when json api is enabled
     router.use('/:seasonId/edit', Season.editSeasonRoute());

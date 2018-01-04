@@ -433,7 +433,6 @@ class Episode {
             return;
         }
 
-        console.log('delete!');
         models.series
             .findOne({
                 _id: seriesId,
@@ -466,7 +465,6 @@ class Episode {
             .catch(function(err) {
                 errorHandler(err, res);
             });
-
     }
 
     addEpisodeRoute() {
