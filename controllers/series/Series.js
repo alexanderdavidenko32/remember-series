@@ -4,6 +4,7 @@
  */
 let models = require.main.require('./models'),
     Helper = require.main.require('./lib/Helper'),
+    Error403 = require.main.require('./lib/Error403'),
     Error404 = require.main.require('./lib/Error404'),
     errorHandler = require.main.require('./lib/error-handler'),
 
@@ -197,6 +198,7 @@ class Series {
 
         this.getSingleSeriesQuery(req)
             .then(function(series) {
+                data._csrf = res.locals._csrf;
                 data.series = series;
 
                 // res.json({data: series});
@@ -303,6 +305,39 @@ class Series {
             })
             .then(function () {
                 res.redirect(`/series/${seriesId}`);
+            })
+            .catch(function(err) {
+                errorHandler(err, res);
+            });
+    }
+
+    deleteSeries(req, res) {
+        let seriesId = req.params.seriesId;
+
+        if (!req.user) {
+            res.redirect(`/series/${seriesId}`);
+            // res.status(401).end();
+            return;
+        }
+
+        models.series
+            .findOne({
+                _id: seriesId,
+                $or: Helper.getCreatorCondition('creator', req)
+            })
+            .then(function (series) {
+                if (Helper.isUsersObject(series, req.user._id)) {
+                    series.remove();
+
+                    series.save();
+                } else {
+                    throw new Error403('Forbidden');
+                }
+
+            })
+            .then(function () {
+                res.redirect('/series');
+                // res.end();
             })
             .catch(function(err) {
                 errorHandler(err, res);

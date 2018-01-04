@@ -369,9 +369,7 @@ class Season {
                 let season = series.seasons.id(seasonId);
 
                 if (Helper.isUsersObject(season, req.user._id)) {
-                    series.seasons.pull({
-                        _id: mongoose.Types.ObjectId(seasonId)
-                    });
+                    season.remove();
 
                     series.save();
                 } else {

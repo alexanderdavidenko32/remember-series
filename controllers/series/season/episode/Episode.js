@@ -448,9 +448,7 @@ class Episode {
                 let episode = season.episodes.id(episodeId);
 
                 if (Helper.isUsersObject(episode, req.user._id)) {
-                    season.episodes.pull({
-                        _id: mongoose.Types.ObjectId(episodeId)
-                    });
+                    episode.remove();
 
                     series.save();
                 } else {

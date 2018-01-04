@@ -13,4 +13,8 @@ block content
   div
     a(href="/series/#{series._id}/edit") edit
   div
+    form(method="post" action="?_method=DELETE")
+      input(type="hidden" name="_csrf" value="#{_csrf}")
+      input(type="submit" value="delete")
+  div
     a(href="/series/#{series._id}/season") seasons list
