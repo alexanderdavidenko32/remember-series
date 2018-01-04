@@ -20,7 +20,8 @@ routes = function () {
     router
         .route('/:episodeId')
         .get(Episode.getEpisode.bind(Episode))
-        .put(Episode.editEpisode);
+        .put(Episode.editEpisode)
+        .delete(Episode.deleteEpisode);
 
     //TODO: get rid when json api is enabled
     router.use('/:episodeId/edit', Episode.editEpisodeRoute());

@@ -8,6 +8,7 @@ let mongoose = require('mongoose'),
     EditEpisodeRoute = require('./EditEpisodeRoute'),
 
     models = require.main.require('./models'),
+    Error403 = require.main.require('./lib/Error403'),
     Error404 = require.main.require('./lib/Error404'),
     errorHandler = require.main.require('./lib/error-handler'),
     Helper = require.main.require('./lib/Helper'),
@@ -269,6 +270,7 @@ class Episode {
 
         this.getEpisodeQuery(req)
             .then(function (episode) {
+                data._csrf = res.locals._csrf;
                 data.series = { _id: req.params.seriesId };
                 data.season = { _id: req.params.seasonId };
                 data.episode = episode;
@@ -418,6 +420,53 @@ class Episode {
             .catch(function(err) {
                 errorHandler(err, res);
             });
+    }
+
+    deleteEpisode(req, res) {
+        let seriesId = req.params.seriesId,
+            seasonId = req.params.seasonId,
+            episodeId = req.params.episodeId;
+
+        if (!req.user) {
+            res.redirect(`/series/${seriesId}/season/${seasonId}/episode/${episodeId}`);
+            // res.status(401).end();
+            return;
+        }
+
+        console.log('delete!');
+        models.series
+            .findOne({
+                _id: seriesId,
+                $or: Helper.getCreatorCondition('creator', req)
+            })
+            .then(function (series) {
+                let season = series.seasons.id(seasonId);
+
+                if (!season || !Helper.checkAccessToObject(season, req.user._id)) {
+                    throw new Error404('wrong season id');
+                }
+
+                let episode = season.episodes.id(episodeId);
+
+                if (Helper.isUsersObject(episode, req.user._id)) {
+                    season.episodes.pull({
+                        _id: mongoose.Types.ObjectId(episodeId)
+                    });
+
+                    series.save();
+                } else {
+                    throw new Error403('Forbidden');
+                }
+
+            })
+            .then(function () {
+                res.redirect(`/series/${seriesId}/season/${seasonId}/episode`);
+                // res.end();
+            })
+            .catch(function(err) {
+                errorHandler(err, res);
+            });
+
     }
 
     addEpisodeRoute() {
