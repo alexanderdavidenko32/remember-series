@@ -1,0 +1,16 @@
+//
+   Created by Alexander Davidenko 
+   @date 2/15/18.
+extends ./index
+
+block content
+  form(action="/search" method="GET")
+    input(type="text" name="name")
+    input(type="submit" value="search")
+
+  if results.length
+    p search result:
+  ul
+  each result in results
+    li
+      a(href="/series/#{result._id}") #{result.name}

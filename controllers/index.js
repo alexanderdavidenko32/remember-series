@@ -2,6 +2,7 @@ let IndexRoute = require('./IndexRoute'),
     LoginRoute = require('./LoginRoute'),
     LogoutRoute = require('./LogoutRoute'),
     SignUpRoute = require('./SignUpRoute'),
+    SearchRoute = require('./SearchRoute'),
     SeriesRoute = require('./series'),
     ErrorsRoute = require('./errors'),
     Error404Route = require('./errors/Error404Route'),
@@ -14,6 +15,7 @@ routes = function(app) {
     app.use('/signup', SignUpRoute);
 
     app.use('/series', SeriesRoute);
+    app.use('/search', SearchRoute);
     app.use('/errors', ErrorsRoute);
 
     app.use('*', Error404Route)

@@ -10,7 +10,8 @@ var seriesSchema = mongoose.Schema({
     //},
     name: {
         type: String,
-        required: true
+        required: true,
+        index: 'text'
     },
     description: {
         type: String
