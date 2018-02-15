@@ -21,4 +21,17 @@ html
     block content
       if user
         h2 hello #{user._id}
+      ul
+        each series in seriesList
+          li
+            a(href="series/#{series._id}") #{series.name}
+            ul
+              each season in series.seasons
+                li
+                  a(href="series/#{series._id}/season/#{season._id}") #{season.name}
+                ul
+                  each episode in season.episodes
+                    li
+                      a(href="series/#{series._id}/season/#{season._id}/episode/#{episode._id}") #{episode.name}
+                      span #{episode.progress.time}
 

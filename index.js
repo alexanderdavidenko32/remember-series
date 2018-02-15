@@ -7,7 +7,6 @@ let express = require('express'),
     connectionUri = `mongodb://${config.db.host}:${config.db.port}/${config.db.database}`,
 
     app = express(),
-    models = require('./models'),
     server;
 
 //TODO: domain
@@ -23,5 +22,5 @@ app.set('view engine', 'jade');
 middleware(app);
 
 server = app.listen(config.port, function(err) {
-    console.log(`app started. http://localhost: ${config.port}`);
+    console.log(`app started. http://localhost:${config.port}`);
 });
